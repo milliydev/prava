@@ -8,12 +8,16 @@ const Database = require('better-sqlite3');
 const compression = require('compression');
 const seo = require('./seo');
 
+// .env faylidagi sozlamalarni o'qish (Node 20.12+); tizimda berilgan qiymatlar ustun turadi
+try { if (typeof process.loadEnvFile === 'function') process.loadEnvFile(path.join(__dirname, '.env')); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 const TICKET_SIZE = 20;
 const DB_FILE = process.env.DB_FILE || path.join(__dirname, 'data', 'rulda.db');
 
 if (!ADMIN_PASSWORD) console.warn('[ogohlantirish] ADMIN_PASSWORD o\'rnatilmagan — admin panel yopiq.');
+else if (ADMIN_PASSWORD.length < 12) console.warn('[ogohlantirish] ADMIN_PASSWORD juda qisqa — kamida 12 ta belgi ishlating.');
 
 /* ---------- Ma'lumotlar bazasi ---------- */
 const db = new Database(DB_FILE);
