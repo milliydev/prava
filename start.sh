@@ -1,0 +1,1 @@
+PORT=4000 ADMIN_PASSWORD=Rulda2026 npm start

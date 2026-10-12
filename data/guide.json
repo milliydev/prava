@@ -1,0 +1,354 @@
+[
+ {
+  "id": "atamalar",
+  "title": "Asosiy atamalar",
+  "topic": "umumiy",
+  "summary": "Qoidalarni tushunish uchun kerak bo'ladigan so'zlar.",
+  "sections": [
+   {
+    "h": "Yo'l va uning qismlari",
+    "p": [
+     "Yo'l deganda faqat asfaltni emas, transport harakati uchun jihozlangan butun yuzani tushunamiz. Unga qatnov qismi, yo'lkalar, yo'l yoqasi va ajratuvchi bo'laklar kiradi.",
+     "Qatnov qismi — yo'lning relssiz transport vositalari yuradigan qismi. U bir nechta harakat bo'lagiga bo'linishi mumkin. Bo'lak deganda bir qator mashina sig'adigan bo'ylama qism tushuniladi."
+    ],
+    "list": [
+     "Yo'l yoqasi — qatnov qismiga tutashgan chekka qism, to'xtash va piyodalar uchun ishlatiladi.",
+     "Ajratuvchi bo'lak — qarama-qarshi oqimlarni ajratadi, unda harakatlanish va to'xtash mumkin emas.",
+     "Aholi punkti — kirish va chiqishi maxsus belgilar bilan ko'rsatilgan hudud."
+    ]
+   },
+   {
+    "h": "Harakat ishtirokchilari",
+    "p": [
+     "Yo'l harakati qatnashchilari uch xil bo'ladi: haydovchi, piyoda va yo'lovchi. Haydovchi — mashinani boshqarayotgan shaxs. Yo'lovchi — mashinada bo'lgan, lekin uni boshqarmayotgan shaxs. Piyoda — transportdan tashqarida yo'lda yurgan shaxs."
+    ]
+   },
+   {
+    "h": "To'xtash turlari",
+    "p": [
+     "Imtihonda eng ko'p adashtiradigan uchta tushuncha shu:"
+    ],
+    "list": [
+     "To'xtash — transport vositasi harakatini 10 daqiqagacha to'xtatish.",
+     "To'xtab turish — yo'lovchi va yukka aloqasi bo'lmagan holda 10 daqiqadan ko'proq to'xtash.",
+     "Majburiy to'xtash — nosozlik, yuk, haydovchi holati yoki to'siq tufayli to'xtashga majbur bo'lish."
+    ]
+   },
+   {
+    "h": "Yetarli ko'rinmaslik",
+    "p": [
+     "Tuman, yomg'ir, qor yoki g'ira-shira paytida yo'l 300 metrdan kam masofada ko'rinsa, bu yetarli ko'rinmaslik hisoblanadi. Bunday paytda yoritish va tezlikka oid qo'shimcha talablar ishlaydi."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "svetofor",
+  "title": "Svetofor va tartibga soluvchi",
+  "topic": "svetofor",
+  "summary": "Har bir chiroq va ishora nimani anglatadi.",
+  "sections": [
+   {
+    "h": "Svetofor chiroqlari",
+    "list": [
+     "Yashil — harakatga ruxsat.",
+     "Miltillovchi yashil — ruxsat vaqti tugayapti, tez orada taqiqlovchi signal yonadi.",
+     "Sariq — harakat taqiqlanadi. Keskin tormozlamasdan to'xtay olmasangiz, davom etishingiz mumkin.",
+     "Miltillovchi sariq — svetofor tartibga solmayapti, belgilar va navbat qoidalariga amal qiling.",
+     "Qizil, shuningdek qizil va sariq birga — harakat taqiqlanadi."
+    ]
+   },
+   {
+    "h": "Qo'shimcha seksiya",
+    "p": [
+     "Asosiy chiroq qizil bo'lsa ham, qo'shimcha seksiyadagi yashil strelka yonsa, shu yo'nalishda harakatlanish mumkin. Lekin bu holda boshqa yo'nalishlardan kelayotganlarga yo'l berasiz."
+    ]
+   },
+   {
+    "h": "Tartibga soluvchining ishoralari",
+    "p": [
+     "Tartibga soluvchining ishorasi svetofor, belgi va chiziqlardan ustun. Uni eslab qolishning oson usuli bor: ko'krak va orqa — \"devor\", ularga qarab yurib bo'lmaydi."
+    ],
+    "list": [
+     "Qo'llar yonga cho'zilgan yoki tushirilgan: yon tomonlardan to'g'riga va o'ngga (tramvay faqat to'g'riga) yurish mumkin. Ko'krak va orqa tomondan harakat taqiqlanadi.",
+     "O'ng qo'l oldinga cho'zilgan: chap yon tomondan barcha yo'nalishlarga (tramvay faqat chapga), ko'krak tomondan faqat o'ngga yurish mumkin. Orqa va o'ng yon tomondan harakat taqiqlanadi.",
+     "Qo'l yuqoriga ko'tarilgan: barcha harakat taqiqlanadi, to'xtay olmaydiganlar bundan mustasno."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "belgilar",
+  "title": "Yo'l belgilari",
+  "topic": "belgilar",
+  "summary": "Belgilar guruhlari va ularni shaklidan tanib olish.",
+  "sections": [
+   {
+    "h": "Shakl va rang bo'yicha tanib olish",
+    "p": [
+     "Belgini o'qishdan oldin uning shakliga qarang — u qaysi guruhga kirishini darhol aytib beradi."
+    ],
+    "list": [
+     "Qizil hoshiyali uchburchak — ogohlantiruvchi: oldinda xavf bor.",
+     "Qizil hoshiyali doira — taqiqlovchi: biror harakatni taqiqlaydi.",
+     "Ko'k doira — buyuruvchi: aynan shunday harakatlanish majburiy.",
+     "Ko'k to'rtburchak — axborot va maxsus buyurish belgilari.",
+     "Sariq romb va teskari uchburchak, sakkizburchak — imtiyoz belgilari: navbatni belgilaydi."
+    ]
+   },
+   {
+    "h": "Ta'sir doirasi",
+    "p": [
+     "Taqiqlovchi belgilarning ko'pchiligi belgi o'rnatilgan joydan eng yaqin chorrahagacha amal qiladi. Chorraha bo'lmasa — aholi punktining oxirigacha. Ta'sir doirasi qo'shimcha axborot belgisi (tablichka) bilan ham ko'rsatilishi mumkin."
+    ]
+   },
+   {
+    "h": "Vaqtinchalik belgilar",
+    "p": [
+     "Yo'l ta'mirlanayotganda sariq fonli vaqtinchalik belgilar qo'yiladi. Ular doimiy belgilarga zid bo'lsa, vaqtinchalik belgiga amal qilinadi."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "chiziqlar",
+  "title": "Yo'l chiziqlari",
+  "topic": "chiziqlar",
+  "summary": "Qaysi chiziqni kesib o'tish mumkin, qaysisini yo'q.",
+  "sections": [
+   {
+    "h": "Asosiy qoida",
+    "p": [
+     "Yaxlit chiziqni kesib o'tish mumkin emas. Uzuq chiziqni esa xavfsizlikka ishonch hosil qilib kesib o'tish mumkin."
+    ],
+    "list": [
+     "Yaxlit chiziq — kesib o'tish taqiqlanadi.",
+     "Qo'sh yaxlit — qarama-qarshi oqimlarni ajratadi, kesib o'tish taqiqlanadi.",
+     "Bir tomoni uzuq qo'sh chiziq — faqat uzuq tomondan kesib o'tish mumkin.",
+     "Uzuq chiziq — kesib o'tishga ruxsat."
+    ]
+   },
+   {
+    "h": "Ziddiyat bo'lganda",
+    "p": [
+     "Belgi va chiziq bir-biriga zid bo'lsa, belgiga amal qilinadi. Oq doimiy chiziq va sariq vaqtinchalik chiziq zid bo'lsa, sariq chiziqqa amal qilinadi."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "manevrlar",
+  "title": "Manevrlar va quvib o'tish",
+  "topic": "manevr",
+  "summary": "Burilish, bo'lak almashtirish va quvib o'tish tartibi.",
+  "sections": [
+   {
+    "h": "Ishora berish",
+    "p": [
+     "Har qanday manevrdan oldin burilish chirog'i bilan ishora bering va manevr tugagach o'chiring. Ishora berish sizga ustunlik bermaydi — boshqalarga xalal bermasligingizga ishonch hosil qilishingiz kerak."
+    ],
+    "list": [
+     "Chap qo'l yonga cho'zilgan — chapga burilish.",
+     "Chap qo'l tirsakdan yuqoriga bukilgan — o'ngga burilish.",
+     "Qo'l yuqoriga ko'tarilgan — tormozlash."
+    ]
+   },
+   {
+    "h": "Bo'lak almashtirish va burilish",
+    "p": [
+     "O'ngga burilishdan oldin o'ng chekkaga, chapga burilishdan oldin chap chekkaga o'ting. Ikki mashina bir vaqtda bo'lak almashtirsa, chapdagisi o'ngdagisiga yo'l beradi."
+    ]
+   },
+   {
+    "h": "Qayrilib olish va orqaga harakat",
+    "p": [
+     "Piyodalar o'tish joyi, tunnel, ko'prik, temir yo'l kesishmasi va ko'rinish 100 metrdan kam joylarda qayrilib olish taqiqlanadi. Orqaga harakatlanish chorrahalarda va qayrilib olish taqiqlangan joylarda mumkin emas."
+    ]
+   },
+   {
+    "h": "Quvib o'tish",
+    "p": [
+     "Quvib o'tishdan oldin qarama-qarshi bo'lak yetarli masofada bo'shligiga, orqangizdagi haydovchi sizni quvib o'tishni boshlamaganiga va oldingizdagi haydovchi chapga burilish ishorasini bermaganiga ishonch hosil qiling."
+    ],
+    "list": [
+     "Piyodalar o'tish joyida quvib o'tish taqiqlanadi.",
+     "Temir yo'l kesishmasida va undan 100 m oldin taqiqlanadi.",
+     "Ko'rinish cheklangan burilish va tepalik cho'qqisida taqiqlanadi.",
+     "Sizni quvib o'tishayotgan bo'lsa, tezlikni oshirmang."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "chorrahalar",
+  "title": "Chorrahalardan o'tish",
+  "topic": "chorraha",
+  "summary": "Kim birinchi o'tadi — bosqichma-bosqich.",
+  "sections": [
+   {
+    "h": "Tekshirish tartibi",
+    "p": [
+     "Har qanday chorrahada savolni shu tartibda yeching:"
+    ],
+    "list": [
+     "Tartibga soluvchi bormi? Bo'lsa — faqat uning ishorasiga qarang.",
+     "Svetofor ishlayaptimi? Bo'lsa — svetoforga amal qiling.",
+     "Imtiyoz belgilari bormi? Asosiy yo'ldagilar birinchi o'tadi.",
+     "Hech narsa yo'q — teng ahamiyatli yo'llar: o'ngdan kelayotganga yo'l bering. Tramvay esa yo'nalishidan qat'i nazar ustun."
+    ]
+   },
+   {
+    "h": "Chapga burilish",
+    "p": [
+     "Chapga burilish yoki qayrilib olishda qarama-qarshi tomondan to'g'riga va o'ngga kelayotganlarga yo'l berasiz."
+    ]
+   },
+   {
+    "h": "Muhim tafsilotlar",
+    "list": [
+     "Asfalt yo'l tuproq yo'lga nisbatan asosiy hisoblanadi.",
+     "Asosiy yo'l chorrahada burilsa, unda kelayotganlar o'zaro o'ng tomon qoidasiga amal qiladi.",
+     "Chorrahadan keyin tirbandlik bo'lsa, yashil yonsa ham chorrahaga kirmang.",
+     "Yashil yonganda ham o'tishni tugatayotgan piyodalarga yo'l bering."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "toxtash",
+  "title": "To'xtash va to'xtab turish",
+  "topic": "toxtash",
+  "summary": "Qayerda to'xtash mumkin emas va masofalar.",
+  "sections": [
+   {
+    "h": "Qayerda to'xtaladi",
+    "p": [
+     "To'xtash yo'lning o'ng tomonida, qatnov qismining chetida, imkoni bo'lsa yo'l yoqasida amalga oshiriladi."
+    ]
+   },
+   {
+    "h": "To'xtash taqiqlangan joylar",
+    "list": [
+     "Chorrahalarda va kesishayotgan qatnov qismi chetidan 5 m dan yaqinda.",
+     "Piyodalar o'tish joylarida va ulardan 5 m oldin.",
+     "Ko'priklar, estakadalar va tunnellarda.",
+     "Temir yo'l kesishmalarida.",
+     "Yo'nalishli transport bekatidan 15 m dan yaqinda."
+    ]
+   },
+   {
+    "h": "Raqamlarni eslab qoling",
+    "list": [
+     "5 m — chorraha va piyodalar o'tish joyi.",
+     "15 m — bekat; aholi punktida avariya belgisi masofasi.",
+     "30 m — aholi punktidan tashqarida avariya belgisi masofasi.",
+     "50 m — temir yo'l kesishmasigacha to'xtab turish taqiqlangan masofa."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "piyoda-temiryol",
+  "title": "Piyodalar, temir yo'l va maxsus hududlar",
+  "topic": "piyoda",
+  "summary": "Piyodalar o'tish joylari, kesishmalar, avtomagistral va turar-joy dahalari.",
+  "sections": [
+   {
+    "h": "Piyodalar",
+    "list": [
+     "Tartibga solinmagan o'tish joyida yo'lni kesib o'tayotgan piyodaga yo'l bering.",
+     "Qo'shni bo'lakdagi mashina o'tish joyi oldida to'xtasa, siz ham to'xtang.",
+     "Oq tayoqli ko'zi ojiz piyodaga har qanday joyda yo'l bering.",
+     "\"Bolalarni tashish\" belgili to'xtagan avtobus yonida tezlikni kamaytiring."
+    ]
+   },
+   {
+    "h": "Temir yo'l kesishmalari",
+    "p": [
+     "Shlagbaum yopilayotgan yoki svetofor qizil bo'lsa, kesishmaga kirmang. Shlagbaum va svetofor bo'lmasa, eng yaqin relsdan kamida 10 m oldin to'xtang. Mashinangiz kesishmada to'xtab qolsa, avval odamlarni tushiring."
+    ]
+   },
+   {
+    "h": "Avtomagistral",
+    "p": [
+     "Avtomagistralda piyodalar, velosipedchilar, o'quv haydash, qayrilib olish va orqaga harakat taqiqlanadi. To'xtash faqat maxsus joylarda mumkin."
+    ]
+   },
+   {
+    "h": "Turar-joy dahasi",
+    "p": [
+     "Bu yerda piyodalar ustun: ular qatnov qismining butun kengligi bo'ylab yurishi mumkin. Tranzit harakat taqiqlanadi, dahadan chiqishda hammaga yo'l berasiz."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "yoritish-shatak",
+  "title": "Yoritish, signallar va shatakka olish",
+  "topic": "yoritish",
+  "summary": "Faralar, tovush signali, ulagichlar va yuk.",
+  "sections": [
+   {
+    "h": "Faralar",
+    "list": [
+     "Qarama-qarshi mashinagacha kamida 150 m qolganda uzoq chiroqdan yaqin chiroqqa o'ting.",
+     "Ko'zingiz qamashsa — avariya signalini yoqing, bo'lakni o'zgartirmay tezlikni kamaytiring yoki to'xtang.",
+     "Tumanga qarshi chiroqlar yetarli ko'rinmaslikda yaqin yoki uzoq chiroq bilan birga yoqiladi."
+    ]
+   },
+   {
+    "h": "Tovush signali",
+    "p": [
+     "Aholi punktida tovush signali faqat yo'l-transport hodisasining oldini olish uchun beriladi."
+    ]
+   },
+   {
+    "h": "Shatakka olish",
+    "list": [
+     "Egiluvchan ulagich: masofa 4–6 m.",
+     "Qattiq ulagich: masofa 4 m dan oshmasligi kerak.",
+     "Shatakdagi mashinada haydovchi bo'lishi va avariya signali yoqilgan bo'lishi kerak.",
+     "Muzlagan yo'lda egiluvchan ulagich bilan shatakka olish taqiqlanadi.",
+     "Shatakdagi avtobusda odam tashish taqiqlanadi."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "xavfsizlik",
+  "title": "Xavfsizlik va birinchi yordam",
+  "topic": "xavfsiz",
+  "summary": "YTH bo'lganda qanday harakat qilish kerak.",
+  "sections": [
+   {
+    "h": "Har kungi qoidalar",
+    "list": [
+     "Xavfsizlik kamarini haydovchi va old o'rindiqdagi yo'lovchilar taqishi shart, orqadagilarga ham tavsiya etiladi. 7 yoshgacha bolalar maxsus bolalar o'rindig'ida tashiladi.",
+     "Telefonda faqat qo'l bo'sh qurilma orqali gaplashing.",
+     "Mast holatda rulga o'tirmang.",
+     "Charchasangiz — to'xtab dam oling."
+    ]
+   },
+   {
+    "h": "Yo'l-transport hodisasi bo'lsa",
+    "p": [
+     "Darhol to'xtang, avariya signalini yoqing va avariya to'xtash belgisini qo'ying. Jabrlanganlarga yordam bering va ichki ishlar organlariga xabar qiling. Hodisaga oid izlar va narsalarni joyidan qo'zg'atmang."
+    ]
+   },
+   {
+    "h": "Birinchi yordam",
+    "list": [
+     "Arterial qon ketish (och qizil, otilib chiqadi) — jarohatdan yuqoriga jgut qo'ying va vaqtini yozib qo'ying.",
+     "Hushsiz, lekin nafas olayotgan odamni yon tomonga yotqizing.",
+     "Boshqa transport bo'lmasa, jabrlanuvchini o'zingiz eng yaqin davolash muassasasiga olib boring va hodisa joyiga qayting."
+    ]
+   },
+   {
+    "h": "Sirpanchiq yo'l",
+    "p": [
+     "Tezlikni oldindan kamaytiring, keskin tormozlamang. Orqa qism sirpansa, rulni sirpanish yo'nalishiga burib, gazni ravon qo'yib yuboring."
+    ]
+   }
+  ]
+ }
+]

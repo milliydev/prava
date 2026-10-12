@@ -1,0 +1,82 @@
+[
+ {
+  "id": "umumiy",
+  "title": "Umumiy qoidalar va atamalar",
+  "description": "Yo'l, qatnov qismi, ishtirokchilar va asosiy tushunchalar"
+ },
+ {
+  "id": "svetofor",
+  "title": "Svetofor va tartibga soluvchi",
+  "description": "Svetofor chiroqlari va tartibga soluvchining ishoralari"
+ },
+ {
+  "id": "belgilar",
+  "title": "Yo'l belgilari",
+  "description": "Belgilar guruhlari va ularning ma'nosi"
+ },
+ {
+  "id": "chiziqlar",
+  "title": "Yo'l chiziqlari",
+  "description": "Gorizontal va vertikal chiziqlar"
+ },
+ {
+  "id": "manevr",
+  "title": "Harakatni boshlash va manevrlar",
+  "description": "Burilish, bo'lak almashtirish, qayrilib olish, orqaga harakat"
+ },
+ {
+  "id": "tezlik",
+  "title": "Tezlik va masofa",
+  "description": "Tezlikni tanlash, masofa va interval"
+ },
+ {
+  "id": "quvib",
+  "title": "Quvib o'tish va qarama-qarshi harakat",
+  "description": "Quvib o'tish shartlari va taqiqlari"
+ },
+ {
+  "id": "toxtash",
+  "title": "To'xtash va to'xtab turish",
+  "description": "Qayerda va qanday to'xtash mumkin"
+ },
+ {
+  "id": "chorraha",
+  "title": "Chorrahalardan o'tish",
+  "description": "Tartibga solingan va solinmagan chorrahalar"
+ },
+ {
+  "id": "piyoda",
+  "title": "Piyodalar va bekatlar",
+  "description": "Piyodalar o'tish joylari va yo'nalishli transport bekatlari"
+ },
+ {
+  "id": "temiryol",
+  "title": "Temir yo'l kesishmalari",
+  "description": "Kesishmalardan xavfsiz o'tish"
+ },
+ {
+  "id": "maxsus",
+  "title": "Avtomagistral va turar-joy dahalari",
+  "description": "Maxsus hududlardagi harakat va maxsus transport"
+ },
+ {
+  "id": "yoritish",
+  "title": "Yoritish va tovush signallari",
+  "description": "Faralar, tumanga qarshi chiroqlar va signal berish"
+ },
+ {
+  "id": "shatak",
+  "title": "Shatakka olish va yuk tashish",
+  "description": "Ulagichlar, shatakka olish va yuk joylash"
+ },
+ {
+  "id": "xavfsiz",
+  "title": "Xavfsizlik va birinchi yordam",
+  "description": "YTHdagi harakatlar va birinchi tibbiy yordam"
+ },
+ {
+  "id": "texnik",
+  "title": "Texnik holat va haydash texnikasi",
+  "description": "Nosozliklar, jihozlar va murakkab sharoitda boshqarish"
+ }
+]
