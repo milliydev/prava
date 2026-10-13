@@ -162,7 +162,7 @@ async function home() {
     <a class="tile" href="${H}/viktorina"><span class="ic">${ICONS.bolt}</span><span><b>Viktorina${pro}</b><small>Tez javob bering — ko'proq ball oling</small></span></a>
     <a class="tile" href="${H}/qollanma"><span class="ic">${ICONS.book}</span><span><b>Qo'llanma</b><small>Qoidalar sodda tilda, boblar bo'yicha</small></span></a>
     <a class="tile" href="${H}/instruktorlar"><span class="ic">${ICONS.user}</span><span><b>Instruktorlar</b><small>Ayol va erkak instruktorlar, narx va vaqtlar</small></span></a>
-    <a class="tile" href="${H}/tarif"><span class="ic">${ICONS.star}</span><span><b>${u.premium ? 'Premium faol' : 'Tariflar'}</b><small>${u.premium ? new Date(u.premium_until).toLocaleDateString('ru-RU') + ' gacha' : "10 000 so'mdan — barcha biletlar va bo'limlar"}</small></span></a>
+    <a class="tile" href="${H}/tarif"><span class="ic">${ICONS.star}</span><span><b>${u.premium ? 'Premium faol' : 'Tariflar'}</b><small>${u.open ? 'Vaqtincha hammasi bepul' : u.premium ? new Date(u.premium_until).toLocaleDateString('ru-RU') + ' gacha' : "10 000 so'mdan — barcha biletlar va bo'limlar"}</small></span></a>
     <a class="tile" href="${H}/xatolar"><span class="ic">${ICONS.warn}</span><span><b>Xatolar ustida ishlash${pro}</b><small>${progress.mistakes().length ? progress.mistakes().length + ' ta savol takrorlashni kutmoqda' : 'Hozircha xato yo\'q'}</small></span></a>
   </div>
 `;
@@ -480,7 +480,7 @@ async function tarif() {
   let sel = 'month';
   const draw = () => {
     $app.innerHTML = `<div class="page-head"><h1>Tariflar</h1><p>Bepul tarif doimo ishlaydi. Premium barcha biletlar, marafon, viktorina va xatolar ustida ishlashni ochadi.</p></div>
-    ${u.premium ? `<div class="panel premium-on">✓ Premium faol: ${new Date(u.premium_until).toLocaleDateString('ru-RU')} gacha</div>` : ''}
+    ${u.open ? `<div class="panel premium-on">✓ Vaqtincha barcha bo'limlar bepul ochiq</div>` : u.premium ? `<div class="panel premium-on">✓ Premium faol: ${new Date(u.premium_until).toLocaleDateString('ru-RU')} gacha</div>` : ''}
     <div class="plans">
       <div class="panel plan free"><h3>Bepul</h3><div class="price">0 so'm</div>
         <ul><li>1–${p.free.tickets}-biletlar</li><li>Kuniga ${p.free.examsPerDay} ta imtihon</li><li>Mavzular bo'yicha mashq</li><li>Qo'llanma va belgilar</li></ul>

@@ -149,9 +149,11 @@ const PLANS = {
   quarter: { title: '90 kun', days: 90, price: 49000 }
 };
 const FREE = { tickets: 10, examsPerDay: 3 };
+// Vaqtincha: barcha pullik bo'limlar hammaga ochiq. Yopish uchun Railway'da OPEN_ACCESS=0 qo'ying (yoki shu qatorni false qiling).
+const OPEN_ACCESS = process.env.OPEN_ACCESS !== '0';
 const devId = req => String(req.get('X-Device-Id') || req.query.device || req.body?.device || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64);
 const premiumUntil = id => (id && db.prepare('SELECT premium_until FROM devices WHERE id=?').get(id)?.premium_until) || 0;
-const isPremium = req => premiumUntil(devId(req)) > Date.now();
+const isPremium = req => OPEN_ACCESS || premiumUntil(devId(req)) > Date.now();
 function needPremium(req, res, next) {
   if (isPremium(req)) return next();
   res.status(402).json({ error: 'Bu bo\'lim premium tarifda ochiladi', paywall: true });
@@ -178,7 +180,7 @@ const PROVIDERS = {
   uzum: !!process.env.UZUM_PAY_URL
 };
 app.get('/api/plans', (req, res) => res.json({ plans: PLANS, free: FREE, providers: PROVIDERS }));
-app.get('/api/me', (req, res) => { const u = premiumUntil(devId(req)); res.json({ premium: u > Date.now(), premium_until: u }); });
+app.get('/api/me', (req, res) => { const u = premiumUntil(devId(req)); res.json({ premium: OPEN_ACCESS || u > Date.now(), premium_until: u, open: OPEN_ACCESS }); });
 app.post('/api/orders', (req, res) => {
   const device = devId(req), { plan, provider } = req.body || {};
   if (!device) return res.status(400).json({ error: 'Qurilma aniqlanmadi' });
