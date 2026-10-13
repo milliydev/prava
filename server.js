@@ -14,14 +14,20 @@ try { if (typeof process.loadEnvFile === 'function') process.loadEnvFile(path.jo
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 const TICKET_SIZE = 20;
-const DB_FILE = process.env.DB_FILE || path.join(__dirname, 'data', 'rulda.db');
+// Railway'da Volume ulansa (RAILWAY_VOLUME_MOUNT_PATH), baza va rasmlar o'sha doimiy diskda saqlanadi —
+// aks holda har deploy/qayta ishga tushishda o'chib ketadi
+const VOLUME = process.env.RAILWAY_VOLUME_MOUNT_PATH || '';
+const DB_FILE = process.env.DB_FILE || (VOLUME ? path.join(VOLUME, 'rulda.db') : path.join(__dirname, 'data', 'rulda.db'));
+const UPLOAD_DIR = VOLUME ? path.join(VOLUME, 'uploads') : path.join(__dirname, 'public', 'uploads');
 
 if (!ADMIN_PASSWORD) console.warn('[ogohlantirish] ADMIN_PASSWORD o\'rnatilmagan — admin panel yopiq.');
 else if (ADMIN_PASSWORD.length < 12) console.warn('[ogohlantirish] ADMIN_PASSWORD juda qisqa — kamida 12 ta belgi ishlating.');
 
 /* ---------- Ma'lumotlar bazasi ---------- */
 fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
-fs.mkdirSync(path.join(__dirname, 'public', 'uploads'), { recursive: true });
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+if (process.env.RAILWAY_ENVIRONMENT && !VOLUME && !process.env.DB_FILE) console.warn('[ogohlantirish] Railway Volume ulanmagan — admin panelda qo\'shilgan ma\'lumotlar har deployda o\'chib ketadi.');
+console.log('Baza fayli:', DB_FILE);
 const db = new Database(DB_FILE);
 db.pragma('journal_mode = WAL');
 db.exec(`
@@ -482,7 +488,7 @@ app.get('/api/admin/export', auth, (req, res) => {
 
 const upload = multer({
   storage: multer.diskStorage({
-    destination: path.join(__dirname, 'public', 'uploads'),
+    destination: UPLOAD_DIR,
     filename: (req, file, cb) => cb(null, crypto.randomBytes(8).toString('hex') + path.extname(file.originalname).toLowerCase())
   }),
   limits: { fileSize: 2 * 1024 * 1024 },
@@ -495,6 +501,7 @@ app.post('/api/admin/upload', auth, upload.single('image'), (req, res) => {
 
 /* Statik fayllar */
 const seoNotFound = seo(app, { db, TOPICS, GUIDE, TICKET_SIZE, FREE, metaData });
+if (VOLUME) app.use('/uploads', express.static(UPLOAD_DIR, { maxAge: '7d' }));
 app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: '7d', index: false, extensions: ['html'],
   // ?v=hash bilan so'ralgan fayl o'zgarmaydi (yangisi boshqa hash oladi) — brauzer qayta so'ramaydi;
