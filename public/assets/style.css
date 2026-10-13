@@ -373,18 +373,3 @@ code{font-size:12px;background:var(--soft);padding:1px 6px;border-radius:6px}
 }
 @media (prefers-reduced-motion:reduce){.sk::after,.loading::before{animation:none}.topbar.on{transition:none}}
 
-/* Kirish loaderi: SSR matni JS chizguncha ko'rinmasligi uchun */
-.splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:var(--bg);transition:opacity .35s ease,visibility .35s;animation:splashOff .35s 8s forwards}
-.splash.off{opacity:0;visibility:hidden;pointer-events:none}
-.splash svg{width:76px;height:76px}
-.splash .ring{stroke-dasharray:296;stroke-dashoffset:296;transform-origin:center;transform-box:fill-box;animation:splashRing 1s ease-out forwards,spin 1.6s 1s linear infinite}
-.splash .chk{stroke-dasharray:80;stroke-dashoffset:80;animation:splashChk .45s .7s ease-out forwards}
-.splash-name{font:700 22px/1 Sora,Inter,system-ui,sans-serif;color:var(--ink);letter-spacing:-.02em}
-.splash-name b{color:#3557F5;font-weight:700}.splash-name i{color:#FF7A1A;font-style:normal}
-.splash-bar{width:120px;height:3px;border-radius:3px;background:var(--line);overflow:hidden}
-.splash-bar span{display:block;width:40%;height:100%;border-radius:3px;background:linear-gradient(90deg,#3557F5,#FF7A1A);animation:splashBar 1s ease-in-out infinite}
-@keyframes splashRing{to{stroke-dashoffset:0}}
-@keyframes splashChk{to{stroke-dashoffset:0}}
-@keyframes splashBar{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
-@keyframes splashOff{to{opacity:0;visibility:hidden}}
-@media (prefers-reduced-motion:reduce){.splash .ring,.splash .chk{animation:none;stroke-dashoffset:0}.splash-bar span{animation:none;width:100%}}
