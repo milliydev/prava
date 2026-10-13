@@ -18,13 +18,31 @@ const DEVICE = (() => {
   if (!d) { d = ((window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now() + '' + Math.random()).replace(/[^a-zA-Z0-9]/g, '').slice(0, 32); store.set('device', d); }
   return d;
 })();
+/* Yuklanish: tepadagi chiziq va sahifa skeleti */
+const $bar = Object.assign(document.createElement('div'), { className: 'topbar' });
+document.body.appendChild($bar);
+let busy = 0, barT = null;
+function loadStart() {
+  if (busy++) return;
+  clearTimeout(barT);
+  $bar.className = 'topbar'; void $bar.offsetWidth; $bar.className = 'topbar on';
+}
+function loadEnd() {
+  if (--busy > 0) return;
+  busy = 0; $bar.className = 'topbar on done';
+  barT = setTimeout(() => { $bar.className = 'topbar'; }, 500);
+}
+const skeleton = () => `<div class="skel" role="status" aria-label="Yuklanmoqda"><div class="sk sk-h"></div><div class="sk sk-p"></div><div class="sk sk-p short"></div><div class="sk-grid">${'<div class="sk sk-card"></div>'.repeat(6)}</div></div>`;
 async function api(path, opts = {}) {
   opts.headers = { ...(opts.headers || {}), 'X-Device-Id': DEVICE };
-  const r = await fetch('/api' + path, opts);
-  const data = await r.json().catch(() => ({}));
-  if (r.status === 402) throw Object.assign(new Error(data.error || 'Premium kerak'), { paywall: true });
-  if (!r.ok) throw new Error(data.error || 'Server javob bermadi');
-  return data;
+  loadStart();
+  try {
+    const r = await fetch('/api' + path, opts);
+    const data = await r.json().catch(() => ({}));
+    if (r.status === 402) throw Object.assign(new Error(data.error || 'Premium kerak'), { paywall: true });
+    if (!r.ok) throw new Error(data.error || 'Server javob bermadi');
+    return data;
+  } finally { loadEnd(); }
 }
 let ME = null;
 const me = async () => ME || (ME = await api('/me').catch(() => ({ premium: false })));
@@ -32,6 +50,7 @@ const somFmt = n => n.toLocaleString('ru-RU').replace(/,/g, ' ') + " so'm";
 let META = null;
 const meta = async () => META || (META = await api('/meta'));
 let cleanup = null; // joriy sahifaning taymerlarini to'xtatish uchun
+let navId = 0; // eng oxirgi o'tishni aniqlash uchun
 
 function setNav(route) {
   document.querySelectorAll('#tabbar a').forEach(a => a.classList.toggle('on', a.getAttribute('href').replace(/^#/, '') === '/' + route));
@@ -75,7 +94,13 @@ async function router() {
   window.scrollTo(0, 0);
   const fn = routes[route] || notFound;
   document.title = (TITLES[route] || 'Prava test onlayn') + ' — pravauchun.uz';
-  try { await fn(arg && decodeURIComponent(arg)); } catch (e) { errorView(e); }
+  const id = ++navId;
+  // ma'lumot tez kelsa skelet ko'rinmaydi, sekin kelsa bo'sh joy o'rniga chiqadi
+  const skelT = setTimeout(() => { if (id === navId) $app.innerHTML = skeleton(); }, 150);
+  try { await fn(arg && decodeURIComponent(arg)); } catch (e) { if (id === navId) errorView(e); }
+  finally { clearTimeout(skelT); }
+  if (id !== navId) return;
+  $app.classList.remove('enter'); void $app.offsetWidth; $app.classList.add('enter');
 }
 window.addEventListener('hashchange', router);
 window.addEventListener('popstate', () => { if (USE_PATH) router(); });

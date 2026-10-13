@@ -349,3 +349,26 @@ code{font-size:12px;background:var(--soft);padding:1px 6px;border-radius:6px}
 .sharh-btn.ai{margin-right:8px}
 @media (max-width:760px){.ai-fab{bottom:calc(76px + env(safe-area-inset-bottom,0px));right:14px;padding:12px}.ai-fab span{display:none}.ai-panel{right:8px;left:8px;width:auto;bottom:calc(72px + env(safe-area-inset-bottom,0px));height:calc(100vh - 150px)}}
 .ai-form textarea{height:44px;font-size:14px;line-height:1.4}
+
+/* ===== Yuklanish ===== */
+.topbar{position:fixed;top:0;left:0;height:3px;width:0;opacity:0;z-index:100;pointer-events:none;border-radius:0 3px 3px 0;background:linear-gradient(90deg,var(--accent),#FF7A1A)}
+.topbar.on{opacity:1;width:80%;transition:width 6s cubic-bezier(.08,.7,.2,1)}
+.topbar.on.done{width:100%;opacity:0;transition:width .2s ease-out,opacity .3s ease .2s}
+.loading{display:flex;justify-content:center;align-items:center;gap:12px}
+.loading::before{content:"";width:22px;height:22px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:spin .8s linear infinite}
+.skel{padding:30px 0}
+.sk{background:var(--line);border-radius:10px;position:relative;overflow:hidden}
+.sk::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--card) 70%,transparent),transparent);animation:shimmer 1.3s ease-in-out infinite}
+.sk-h{height:34px;width:min(420px,70%);margin-bottom:16px}
+.sk-p{height:14px;width:min(620px,92%);margin-bottom:10px}
+.sk-p.short{width:min(380px,60%)}
+.sk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:28px}
+.sk-card{height:96px;border-radius:var(--radius)}
+@keyframes shimmer{to{transform:translateX(100%)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:no-preference){
+  .skel{animation:pagein .2s ease-out}
+  #app.enter{animation:pagein .28s ease-out}
+  @keyframes pagein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+@media (prefers-reduced-motion:reduce){.sk::after,.loading::before{animation:none}.topbar.on{transition:none}}
