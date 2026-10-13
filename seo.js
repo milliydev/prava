@@ -19,17 +19,18 @@ module.exports = function seo(app, { db, TOPICS, GUIDE, TICKET_SIZE, FREE, metaD
   const allIds = () => db.prepare('SELECT id FROM questions ORDER BY id').all().map(r => r.id);
   const rows = ids => { if (!ids.length) return []; const m = new Map(db.prepare(`SELECT * FROM questions WHERE id IN (${ids.map(() => '?').join(',')})`).all(...ids).map(r => [r.id, r])); return ids.map(i => m.get(i)).filter(Boolean); };
   const ticketsCount = () => Math.floor(allIds().length / TICKET_SIZE);
-  const abs = p => (SITE || '') + p;
+  // PUBLIC_URL berilmasa so'rov manzilidan olinadi: sitemap va canonical doim to'liq URL bo'lishi kerak
+  const abs = (req, p) => (SITE || `${req.protocol}://${req.get('host')}`) + p;
 
   function render(req, res, { title, desc, h1, body, jsonld = [], noindex = false, status = 200 }) {
-    const url = abs(req.path === '/' ? '/' : req.path);
+    const url = abs(req, req.path === '/' ? '/' : req.path);
     const head = `<title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${esc(url)}">
 ${noindex ? '<meta name="robots" content="noindex">' : '<meta name="robots" content="index,follow,max-image-preview:large">'}
 <meta property="og:type" content="website"><meta property="og:site_name" content="${BRAND}">
 <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}">
-<meta property="og:url" content="${esc(url)}"><meta property="og:image" content="${esc(abs('/og.png'))}"><meta property="og:locale" content="uz_UZ">
+<meta property="og:url" content="${esc(url)}"><meta property="og:image" content="${esc(abs(req, '/og.png'))}"><meta property="og:locale" content="uz_UZ"><meta property="og:locale:alternate" content="ru_RU">
 <meta name="twitter:card" content="summary_large_image">
 ${process.env.GOOGLE_VERIFY ? `<meta name="google-site-verification" content="${esc(process.env.GOOGLE_VERIFY)}">` : ''}
 ${process.env.YANDEX_VERIFY ? `<meta name="yandex-verification" content="${esc(process.env.YANDEX_VERIFY)}">` : ''}
@@ -40,9 +41,17 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j).replac
       // /api/meta so'rovini kutmaslik uchun ma'lumot sahifaning o'zida keladi
       .replace('<script src="/assets/signs.js', `<script>window.__META=${JSON.stringify(metaData()).replace(/</g, '\\u003c')}</script>\n<script src="/assets/signs.js`)
       .replace('<main class="wrap" id="app"><div class="loading">Yuklanmoqda…</div></main>',
-        `<main class="wrap" id="app"><div class="ssr page-head"><h1>${esc(h1 || title)}</h1>${body}</div></main>`);
+        `<main class="wrap" id="app"><div class="ssr page-head"><h1>${esc(h1 || title)}</h1>${body}</div></main>${noindex ? '' : SEO_BLOCK}`);
     res.status(status).set('Cache-Control', 'public, max-age=300').type('html').send(html);
   }
+
+  // #app dan tashqarida turadi: JS sahifani chizgandan keyin ham Google ko'radi
+  const SEO_BLOCK = `<section class="wrap seo-about">
+<h2>Prava test va haydovchilik imtihoniga tayyorgarlik</h2>
+<p>${BRAND} — O'zbekistonda prava (haydovchilik guvohnomasi) olishga tayyorlanayotganlar uchun onlayn avtotest. Yo'l harakati qoidalari (YHQ) bo'yicha prava biletlari, imtihon savollari va javoblari, rasmli chorraha vaziyatlari, yo'l belgilari va qo'llanma bir joyda. Testlarni telefonda bepul yechib, nazariy imtihonga (20 savol, 25 daqiqa) tayyorlaning.</p>
+<p>Права тест онлайн, ЙҲҚ билетлари ва имтиҳон саволлари. Тест ПДД Узбекистан 2026: билеты, экзамен на права, вопросы с ответами и пояснениями.</p>
+<nav class="seo-links"><a href="/biletlar">Prava biletlari</a><a href="/imtihon">Prava imtihoni onlayn</a><a href="/mavzular">YHQ test mavzulari</a><a href="/qollanma">Yo'l harakati qoidalari</a><a href="/belgilar">Yo'l belgilari</a><a href="/instruktorlar">Avtoinstruktorlar</a></nav>
+</section>`;
 
   const qList = (qs, withAnswers) => '<ol class="ssr-q">' + qs.map(r => {
     const o = JSON.parse(r.options);
@@ -60,16 +69,16 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j).replac
   app.get('/', (req, res) => {
     const total = allIds().length, t = ticketsCount();
     render(req, res, {
-      title: `Prava test 2026 onlayn — YHQ biletlari va imtihon | ${BRAND}`,
-      desc: `Prava testi onlayn: ${total} ta savol, ${t} ta bilet, haqiqiy imtihon rejimi (20 savol, 25 daqiqa), rasmli chorraha vaziyatlari va YHQ qo'llanmasi. Тест ПДД Узбекистан онлайн.`,
+      title: `Prava test 2026 onlayn — avtotest, YHQ biletlari va imtihon | ${BRAND}`,
+      desc: `Prava testi onlayn: ${total} ta savol, ${t} ta bilet, haqiqiy imtihon rejimi (20 savol, 25 daqiqa), rasmli chorraha vaziyatlari va YHQ qo'llanmasi. Права тест, тест ПДД Узбекистан онлайн.`,
       h1: "Prava test onlayn — haydovchilik imtihoniga tayyorgarlik",
       body: `<p>pravauchun.uz — O'zbekiston Yo'l harakati qoidalari (YHQ) bo'yicha onlayn avtotest. ${total} ta savol, ${t} ta prava bileti, imtihon rejimi, rasmli chorraha savollari, yo'l belgilari va qo'llanma bir joyda.</p>
 <p>Онлайн тест ПДД Республики Узбекистан: билеты, экзамен, разбор вопросов с пояснениями.</p>
 <ul><li><a href="/biletlar">Prava biletlari</a></li><li><a href="/imtihon">Imtihon rejimi</a></li><li><a href="/mavzular">Mavzular bo'yicha test</a></li><li><a href="/qollanma">YHQ qo'llanma</a></li><li><a href="/belgilar">Yo'l belgilari</a></li></ul>
 <h2>Ko'p beriladigan savollar</h2>${FAQ.map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('')}`,
       jsonld: [
-        { '@context': 'https://schema.org', '@type': 'WebSite', name: BRAND, alternateName: ['pravauchun', 'pravauchun avtotest', 'Prava test'], url: abs('/'), inLanguage: 'uz' },
-        { '@context': 'https://schema.org', '@type': 'Organization', name: BRAND, url: abs('/'), logo: abs('/og.png') },
+        { '@context': 'https://schema.org', '@type': 'WebSite', name: BRAND, alternateName: ['pravauchun', 'pravauchun avtotest', 'Prava test', 'Avtotest', 'Права тест'], url: abs(req, '/'), inLanguage: 'uz' },
+        { '@context': 'https://schema.org', '@type': 'Organization', name: BRAND, url: abs(req, '/'), logo: abs(req, '/og.png') },
         { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: FAQ.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }
       ]
     });
@@ -140,12 +149,12 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j).replac
   for (const [k, [t, d]] of Object.entries(simple)) app.get('/' + k, (req, res) => render(req, res, { title: `${t} | ${BRAND}`, desc: d, h1: t, body: `<p>${esc(d)}</p>`, noindex: k === 'xatolar' }));
   for (const k of ['imtihon-boshlash', 'marafon-yechish', 'viktorina-boshlash']) app.get('/' + k, (req, res) => render(req, res, { title: BRAND, desc: '', h1: BRAND, body: '', noindex: true }));
 
-  app.get('/robots.txt', (req, res) => res.type('text/plain').send(`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /admin\n${SITE ? `Sitemap: ${SITE}/sitemap.xml\n` : ''}`));
+  app.get('/robots.txt', (req, res) => res.type('text/plain').send(`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /admin\nSitemap: ${abs(req, '/sitemap.xml')}\n`));
   app.get('/sitemap.xml', (req, res) => {
     const urls = ['/', '/biletlar', '/imtihon', '/mavzular', '/qollanma', '/belgilar', '/instruktorlar', '/marafon', '/tarif',
       ...Array.from({ length: ticketsCount() }, (_, i) => `/bilet/${i + 1}`), ...TOPICS.map(t => `/mavzu/${t.id}`), ...GUIDE.map(c => `/bob/${c.id}`)];
     const now = new Date().toISOString().slice(0, 10);
-    res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(u => `<url><loc>${abs(u)}</loc><lastmod>${now}</lastmod><priority>${u === '/' ? '1.0' : u.startsWith('/bilet/') ? '0.7' : '0.8'}</priority></url>`).join('')}</urlset>`);
+    res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(u => `<url><loc>${abs(req, u)}</loc><lastmod>${now}</lastmod><priority>${u === '/' ? '1.0' : u.startsWith('/bilet/') ? '0.7' : '0.8'}</priority></url>`).join('')}</urlset>`);
   });
   return (req, res) => render(req, res, { title: `Sahifa topilmadi | ${BRAND}`, desc: '', h1: 'Sahifa topilmadi', body: '<p><a href="/">Bosh sahifa</a></p>', noindex: true, status: 404 });
 };

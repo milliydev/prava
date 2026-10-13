@@ -373,3 +373,10 @@ code{font-size:12px;background:var(--soft);padding:1px 6px;border-radius:6px}
 }
 @media (prefers-reduced-motion:reduce){.sk::after,.loading::before{animation:none}.topbar.on{transition:none}}
 
+
+/* SEO bloki: sahifa ostida, footer ustida */
+.seo-about{padding-top:28px;padding-bottom:8px;color:var(--muted);font-size:14px;line-height:1.6}
+.seo-about h2{font-size:16px;color:var(--ink);margin:0 0 8px}
+.seo-about p{margin:0 0 10px}
+.seo-links{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:6px}
+.seo-links a{color:var(--accent);text-decoration:none}
