@@ -1,7 +1,8 @@
 'use strict';
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-let token = sessionStorage.getItem('yolchi_admin') || '';
+// Token faqat xotirada: sahifa ochilganda/yangilanganda har safar parol so'raladi
+let token = '';
 let TOPICS = [], page = 1, items = [], editing = null, customImage = '';
 
 function toast(msg) {
@@ -17,10 +18,16 @@ async function api(path, opts = {}) {
   if (!r.ok) throw new Error(data.error || 'Xatolik');
   return data;
 }
-function logout() { token = ''; sessionStorage.removeItem('yolchi_admin'); showLogin(); }
-function showLogin() { $('login').classList.remove('hidden'); $('panel').classList.add('hidden'); $('logoutBtn').classList.add('hidden'); }
+function logout() { token = ''; showLogin(); }
+function showLogin() {
+  ['panel', 'instrPanel', 'tabs', 'logoutBtn'].forEach(id => $(id).classList.add('hidden'));
+  ['editDlg', 'instrDlg'].forEach(id => $(id).open && $(id).close());
+  $('login').classList.remove('hidden');
+}
 async function showPanel() {
-  $('login').classList.add('hidden'); $('panel').classList.remove('hidden'); $('logoutBtn').classList.remove('hidden');
+  if (!token) return showLogin();
+  $('login').classList.add('hidden'); $('panel').classList.remove('hidden'); $('instrPanel').classList.add('hidden'); $('logoutBtn').classList.remove('hidden');
+  document.querySelectorAll('#tabs .chip').forEach(c => c.classList.toggle('on', c.dataset.tab === 'panel'));
   TOPICS = await (await fetch('/api/topics')).json();
   const opts = TOPICS.map(t => `<option value="${t.id}">${esc(t.title)}</option>`).join('');
   $('topicFilter').innerHTML = '<option value="">Barcha mavzular</option>' + opts;
@@ -34,7 +41,7 @@ $('loginForm').onsubmit = async e => {
   e.preventDefault(); $('loginErr').textContent = '';
   try {
     const d = await api('/admin/login', { method: 'POST', json: { password: $('pw').value } });
-    token = d.token; sessionStorage.setItem('yolchi_admin', token); $('pw').value = ''; showPanel();
+    token = d.token; $('pw').value = ''; showPanel();
   } catch (err) { $('loginErr').textContent = err.message; }
 };
 $('logoutBtn').onclick = logout;
@@ -97,7 +104,7 @@ function openEditor(it) {
   $('fUpload').value = ''; preview(img); $('formErr').textContent = '';
   $('editDlg').showModal();
 }
-$('addBtn').onclick = () => openEditor(null);
+$('addBtn').onclick = () => token && openEditor(null);
 $('addOpt').onclick = () => { if ($('fOptions').children.length < 6) optRow(); };
 $('cancelBtn').onclick = () => $('editDlg').close();
 $('fImage').onchange = () => preview($('fImage').value === '__custom' ? customImage : $('fImage').value);
@@ -146,7 +153,7 @@ $('exportBtn').onclick = async () => {
   } catch (err) { toast(err.message); }
 };
 
-token ? showPanel().catch(showLogin) : showLogin();
+showLogin();
 
 /* ---- Instruktorlar ---- */
 let instrs = [], editI = null, iPhoto = '';
@@ -183,7 +190,7 @@ function openInstr(i) {
   $('iPrev').src = iPhoto || ''; $('iPrev').style.display = iPhoto ? 'block' : 'none';
   $('instrDlg').showModal();
 }
-$('addInstr').onclick = () => openInstr(null);
+$('addInstr').onclick = () => token && openInstr(null);
 $('iCancel').onclick = () => $('instrDlg').close();
 $('iPhoto').onchange = async () => {
   const f = $('iPhoto').files[0]; if (!f) return;
