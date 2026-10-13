@@ -558,6 +558,11 @@ app.post('/api/admin/upload', auth, upload.single('image'), (req, res) => {
 
 /* Statik fayllar */
 const seoNotFound = seo(app, { db, TOPICS, GUIDE, TICKET_SIZE, FREE, metaData });
+// Admin sahifa: JS/CSS manziliga fayl hashi qo'shiladi — brauzer keshdagi eski admin.js ni ishlatib qolmasin
+const fileVer = f => crypto.createHash('md5').update(fs.readFileSync(path.join(__dirname, 'public', f))).digest('hex').slice(0, 8);
+const ADMIN_HTML = ['assets/style.css', 'assets/signs.js', 'assets/admin.js'].reduce((t, f) => t.replace(`"/${f}"`, `"/${f}?v=${fileVer(f)}"`),
+  fs.readFileSync(path.join(__dirname, 'public', 'admin.html'), 'utf8'));
+app.get(['/admin', '/admin.html'], (req, res) => res.set('Cache-Control', 'no-store').type('html').send(ADMIN_HTML));
 if (VOLUME) app.use('/uploads', express.static(UPLOAD_DIR, { maxAge: '7d' }));
 app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: '7d', index: false, extensions: ['html'],
