@@ -1,4 +1,4 @@
-# Rulda — haydovchilik imtihoniga tayyorgarlik sayti
+# pravauchun.uz — haydovchilik imtihoniga tayyorgarlik sayti
 
 Biletlar, imtihon rejimi, mavzular bo'yicha mashq, viktorina, qo'llanma, belgilar katalogi va xatolar ustida ishlash. Savollar sizning serveringizdagi SQLite bazasida saqlanadi va `/admin` sahifasidan boshqariladi.
 

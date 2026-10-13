@@ -6,7 +6,7 @@ const vm = require('vm');
 
 module.exports = function seo(app, { db, TOPICS, GUIDE, TICKET_SIZE, FREE }) {
   const SITE = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
-  const BRAND = 'Rulda';
+  const BRAND = 'pravauchun.uz';
   const TPL = fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8');
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   // belgilar nomlari
@@ -46,7 +46,7 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j).replac
 
   const FAQ = [
     ["Prava imtihonida nechta savol bo'ladi?", "Nazariy imtihonda 20 ta savol beriladi, ularga 25 daqiqa vaqt ajratiladi va 2 tadan ortiq xato qilinmasligi kerak."],
-    ["Prava testini onlayn qanday mashq qilish mumkin?", "Rulda saytida biletlar, imtihon rejimi, mavzular bo'yicha testlar, marafon va qo'llanma bor. Bepul tarifda dastlabki biletlar va kuniga bir necha imtihon ochiq."],
+    ["Prava testini onlayn qanday mashq qilish mumkin?", "pravauchun.uz saytida biletlar, imtihon rejimi, mavzular bo'yicha testlar, marafon va qo'llanma bor. Bepul tarifda dastlabki biletlar va kuniga bir necha imtihon ochiq."],
     ["Savollar 2026-yilgi qoidalarga mosmi?", "Savollar amaldagi Yo'l harakati qoidalari (VM 172-son qarori va keyingi o'zgarishlar) asosida tuzilgan va o'quv maqsadida mo'ljallangan."],
     ["Chorraha savollarini qanday o'rganish mumkin?", "Saytda yuzlab rasmli chorraha vaziyatlari bor: o'ng tomon qoidasi, asosiy yo'l, tramvay ustunligi, svetofor va tartibga soluvchi ishoralari."],
     ["Testlar telefonda ishlaydimi?", "Ha, sayt telefon, planshet va kompyuterda ishlaydi, ilova o'rnatish shart emas."]
@@ -58,12 +58,12 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j).replac
       title: `Prava test 2026 onlayn — YHQ biletlari va imtihon | ${BRAND}`,
       desc: `Prava testi onlayn: ${total} ta savol, ${t} ta bilet, haqiqiy imtihon rejimi (20 savol, 25 daqiqa), rasmli chorraha vaziyatlari va YHQ qo'llanmasi. Тест ПДД Узбекистан онлайн.`,
       h1: "Prava test onlayn — haydovchilik imtihoniga tayyorgarlik",
-      body: `<p>Rulda — O'zbekiston Yo'l harakati qoidalari (YHQ) bo'yicha onlayn avtotest. ${total} ta savol, ${t} ta prava bileti, imtihon rejimi, rasmli chorraha savollari, yo'l belgilari va qo'llanma bir joyda.</p>
+      body: `<p>pravauchun.uz — O'zbekiston Yo'l harakati qoidalari (YHQ) bo'yicha onlayn avtotest. ${total} ta savol, ${t} ta prava bileti, imtihon rejimi, rasmli chorraha savollari, yo'l belgilari va qo'llanma bir joyda.</p>
 <p>Онлайн тест ПДД Республики Узбекистан: билеты, экзамен, разбор вопросов с пояснениями.</p>
 <ul><li><a href="/biletlar">Prava biletlari</a></li><li><a href="/imtihon">Imtihon rejimi</a></li><li><a href="/mavzular">Mavzular bo'yicha test</a></li><li><a href="/qollanma">YHQ qo'llanma</a></li><li><a href="/belgilar">Yo'l belgilari</a></li></ul>
 <h2>Ko'p beriladigan savollar</h2>${FAQ.map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('')}`,
       jsonld: [
-        { '@context': 'https://schema.org', '@type': 'WebSite', name: BRAND, alternateName: ['Rulda avtotest', 'Prava test'], url: abs('/'), inLanguage: 'uz' },
+        { '@context': 'https://schema.org', '@type': 'WebSite', name: BRAND, alternateName: ['pravauchun', 'pravauchun avtotest', 'Prava test'], url: abs('/'), inLanguage: 'uz' },
         { '@context': 'https://schema.org', '@type': 'Organization', name: BRAND, url: abs('/'), logo: abs('/og.png') },
         { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: FAQ.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }
       ]

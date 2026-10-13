@@ -74,7 +74,7 @@ async function router() {
   setNav(route);
   window.scrollTo(0, 0);
   const fn = routes[route] || notFound;
-  document.title = (TITLES[route] || 'Prava test onlayn') + ' — Rulda';
+  document.title = (TITLES[route] || 'Prava test onlayn') + ' — pravauchun.uz';
   try { await fn(arg && decodeURIComponent(arg)); } catch (e) { errorView(e); }
 }
 window.addEventListener('hashchange', router);
@@ -508,7 +508,7 @@ async function aiAsk(messages) {
   if (!USE_PATH) { // Claude ichidagi namunaviy sahifa
     if (sampleNS === undefined) sampleNS = window.claude ? await window.claude.use('sample') : null;
     if (!sampleNS) throw new Error("AI bu ko'rinishda mavjud emas");
-    const sys = "Sen Rulda saytining yordamchisisan: O'zbekiston Yo'l harakati qoidalari, belgilar, chorrahalar va haydovchilik imtihoni bo'yicha foydalanuvchi tilida (odatda o'zbek, lotin) qisqa va tushunarli javob ber (2–6 gap). Raqamga ishonching komil bo'lmasa, rasmiy YHQ matnini tekshirishni tavsiya qil. Mavzudan tashqari savollarga javob berma.";
+    const sys = "Sen pravauchun.uz saytining yordamchisisan: O'zbekiston Yo'l harakati qoidalari, belgilar, chorrahalar va haydovchilik imtihoni bo'yicha foydalanuvchi tilida (odatda o'zbek, lotin) qisqa va tushunarli javob ber (2–6 gap). Raqamga ishonching komil bo'lmasa, rasmiy YHQ matnini tekshirishni tavsiya qil. Mavzudan tashqari savollarga javob berma.";
     const conv = messages.map((m, i) => ({ role: m.role, content: i === 0 ? sys + "\n\n" + m.content : m.content }));
     const r = await sampleNS(conv, { modelTier: 'quick', cache: false });
     return r.text;

@@ -20,6 +20,8 @@ if (!ADMIN_PASSWORD) console.warn('[ogohlantirish] ADMIN_PASSWORD o\'rnatilmagan
 else if (ADMIN_PASSWORD.length < 12) console.warn('[ogohlantirish] ADMIN_PASSWORD juda qisqa — kamida 12 ta belgi ishlating.');
 
 /* ---------- Ma'lumotlar bazasi ---------- */
+fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
+fs.mkdirSync(path.join(__dirname, 'public', 'uploads'), { recursive: true });
 const db = new Database(DB_FILE);
 db.pragma('journal_mode = WAL');
 db.exec(`
@@ -268,7 +270,7 @@ app.post('/api/click/complete', clickHandler('complete'));
 
 /* ---------- AI yordamchi (Claude) ---------- */
 const AI = { key: process.env.ANTHROPIC_API_KEY || '', model: process.env.ANTHROPIC_MODEL || 'claude-haiku-5-5', freePerDay: 5, premiumPerDay: 100 };
-const AI_SYSTEM = `Sen "Rulda" saytining yordamchisisan. O'zbekiston Yo'l harakati qoidalari (YHQ), yo'l belgilari, chorrahadan o'tish, haydovchilik imtihoni va xavfsiz haydash bo'yicha savollarga javob berasan.
+const AI_SYSTEM = `Sen "pravauchun.uz" saytining yordamchisisan. O'zbekiston Yo'l harakati qoidalari (YHQ), yo'l belgilari, chorrahadan o'tish, haydovchilik imtihoni va xavfsiz haydash bo'yicha savollarga javob berasan.
 Qoidalar:
 - Foydalanuvchi qaysi tilda yozsa, o'sha tilda javob ber (odatda o'zbek tilida, lotin yozuvida).
 - Qisqa va tushunarli yoz: 2–6 gap, kerak bo'lsa qisqa ro'yxat. Murakkab atamalarni oddiy so'z bilan tushuntir.
@@ -495,4 +497,4 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: '7d', index: fa
 app.get(/^\/(?!api\/).*/, seoNotFound);
 app.use((err, req, res, next) => { console.error(err); res.status(500).json({ error: 'Serverda xatolik' }); });
 
-app.listen(PORT, () => console.log(`Rulda ishlamoqda: http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`pravauchun.uz ishlamoqda: http://localhost:${PORT}`));

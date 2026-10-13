@@ -204,6 +204,10 @@ header.top{background:var(--card);color:var(--ink);border-bottom:1px solid var(-
 .logo{color:var(--ink)}
 .logo svg circle:first-child,.logo svg path{stroke:var(--accent)}
 .logo em{color:var(--muted)}
+.logo svg path.chk{stroke:#FF7A1A}
+.logo span{font-family:"Sora","Inter",system-ui,sans-serif;letter-spacing:-.02em}
+.logo span b{font-weight:600;color:var(--muted)}
+.logo span i{font-style:normal;color:#FF7A1A}
 .mainnav a{color:var(--muted)}
 .mainnav a:hover{color:var(--ink)}
 .mainnav a.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
