@@ -47,12 +47,14 @@
         <h1>Biletlar tahlili</h1>
         <p id="tSummary" class="muted"></p>
       </div>
-      <p class="muted" style="font-size:14px">Qizil — kamchiligi bor bilet (izohsiz, takroriy, bir xil variantli yoki rasmi
+      <p id="tHelp" class="muted" style="font-size:14px">Qizil — kamchiligi bor bilet (izohsiz, takroriy, bir xil variantli yoki rasmi
         yo'q savol). Yashil — 20 ta savolning hammasi tekshirilgan va kamchiliksiz. Biletni bosing — savollari va
-        kamchiliklari chiqadi.</p>
+        tahrirlash oynasi ochiladi.</p>
       <div class="tickets" id="tGrid"></div>
-      <div id="tDetail" class="hidden" style="margin-top:22px">
-        <div class="admin-tools" style="align-items:center"><h2 id="tTitle" style="font-size:22px;margin:0"></h2>
+      <div id="tDetail" class="hidden">
+        <div class="admin-tools" style="align-items:center"><button class="btn secondary" id="tBack">← Barcha
+            biletlar</button><button class="ghost" id="tPrev">‹ Oldingi</button><button class="ghost" id="tNext">Keyingi
+            ›</button><h2 id="tTitle" style="font-size:22px;margin:0"></h2>
           <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="tOnlyBad"> Faqat
             kamchiligi borlar</label></div>
         <div class="table-wrap">

@@ -164,7 +164,7 @@ document.querySelectorAll('#tabs [data-tab]').forEach(b => b.onclick = () => {
   $('instrPanel').classList.toggle('hidden', b.dataset.tab !== 'instrPanel');
   $('ticketPanel').classList.toggle('hidden', b.dataset.tab !== 'ticketPanel');
   if (b.dataset.tab === 'instrPanel') loadInstr();
-  if (b.dataset.tab === 'ticketPanel') loadTickets();
+  if (b.dataset.tab === 'ticketPanel') { closeTicket(); loadTickets(); }
 });
 async function loadInstr() {
   try {
@@ -212,11 +212,12 @@ $('instrForm').onsubmit = async e => {
 };
 
 /* ---- Biletlar tahlili ---- */
-let curTicket = null, tQs = [];
+let curTicket = null, tQs = [], tCount = 0;
 const realIssues = q => q.issues.filter(x => x !== 'tekshirilmagan');
 async function loadTickets(open) {
   try {
     const d = await api('/admin/tickets');
+    tCount = d.tickets.length;
     $('tSummary').textContent = `${d.total} ta savol, ${d.tickets.length} ta bilet (har biri ${d.ticketSize} ta).` +
       (d.leftover ? ` ${d.leftover} ta savol hech bir biletga kirmagan.` : '') + ` Kamchiligi bor savollar: ${d.issues} ta.`;
     $('tGrid').innerHTML = d.tickets.map(t => {
@@ -234,15 +235,25 @@ async function showTicket(n) {
     const d = await api('/admin/tickets/' + n);
     curTicket = n; tQs = d.questions;
     $('tTitle').textContent = n ? `${n}-bilet` : 'Biletga kirmagan savollar';
-    $('tDetail').classList.remove('hidden'); renderTicket();
-    $('tDetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    ['tGrid', 'tHelp'].forEach(id => $(id).classList.add('hidden')); $('tDetail').classList.remove('hidden');
+    $('tPrev').disabled = n <= 1; $('tNext').disabled = !n || n >= tCount;
+    renderTicket(); window.scrollTo(0, 0);
   } catch (e) { toast(e.message); }
 }
+function closeTicket() {
+  curTicket = null; $('tDetail').classList.add('hidden'); ['tGrid', 'tHelp'].forEach(id => $(id).classList.remove('hidden'));
+}
+$('tBack').onclick = closeTicket;
+$('tPrev').onclick = () => curTicket > 1 && showTicket(curTicket - 1);
+$('tNext').onclick = () => curTicket < tCount && showTicket(curTicket + 1);
 function renderTicket() {
   const list = $('tOnlyBad').checked ? tQs.filter(q => realIssues(q).length) : tQs;
   $('tRows').innerHTML = list.length ? list.map(q => `<tr>
     <td>${q.id}</td>
-    <td>${esc(q.question)}${q.image ? ' <span class="tag">rasm</span>' : ''}<br><small class="muted">To'g'ri: ${esc(q.options[q.correct])} · ${esc(tname(q.topic))}</small>
+    <td>${esc(q.question)}${q.image ? ' <span class="tag">rasm</span>' : ''}<br><small class="muted">${esc(tname(q.topic))}</small>
+      ${q.image ? `<div class="qimg" style="max-width:260px;margin:6px 0">${renderImage(q.image)}</div>` : ''}
+      <ol style="margin:6px 0 0;padding-left:20px;font-size:14px">${q.options.map((o, k) => `<li style="${k === q.correct ? 'color:var(--green);font-weight:600' : ''}">${esc(o)}${k === q.correct ? ' ✓' : ''}</li>`).join('')}</ol>
+      ${q.explanation ? `<small class="muted">Izoh: ${esc(q.explanation)}</small>` : ''}
       <div class="ai-out muted" id="ai${q.id}" style="white-space:pre-wrap;font-size:14px"></div></td>
     <td>${q.issues.length ? q.issues.map(x => `<span class="tag" style="${x === 'tekshirilmagan' ? '' : 'color:var(--red)'}">${esc(x)}</span>`).join(' ') : '<span class="tag ok">kamchiliksiz</span>'}</td>
     <td style="white-space:nowrap"><button class="ghost" data-te="${q.id}">Tahrirlash</button> <button class="ghost" data-ai="${q.id}">AI tekshiruv</button></td></tr>`).join('')
