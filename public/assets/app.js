@@ -591,4 +591,7 @@ function aiExplain(q, chosen) {
 }
 aiMount();
 
-router();
+router().finally(() => {
+  const sp = document.getElementById('splash');
+  if (sp) { sp.classList.add('off'); setTimeout(() => sp.remove(), 400); }
+});
