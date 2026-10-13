@@ -21,16 +21,21 @@ const DEVICE = (() => {
 /* Yuklanish: tepadagi chiziq va sahifa skeleti */
 const $bar = Object.assign(document.createElement('div'), { className: 'topbar' });
 document.body.appendChild($bar);
-let busy = 0, barT = null;
+let busy = 0, barT = null, barAt = 0;
+const BAR_MIN = 350; // juda tez javobda ham chiziq ko'zga ko'rinsin
 function loadStart() {
   if (busy++) return;
-  clearTimeout(barT);
+  clearTimeout(barT); barAt = Date.now();
   $bar.className = 'topbar'; void $bar.offsetWidth; $bar.className = 'topbar on';
 }
 function loadEnd() {
   if (--busy > 0) return;
-  busy = 0; $bar.className = 'topbar on done';
-  barT = setTimeout(() => { $bar.className = 'topbar'; }, 500);
+  busy = 0;
+  barT = setTimeout(() => {
+    if (busy) return;
+    $bar.className = 'topbar on done';
+    barT = setTimeout(() => { if (!busy) $bar.className = 'topbar'; }, 500);
+  }, Math.max(0, BAR_MIN - (Date.now() - barAt)));
 }
 const skeleton = () => `<div class="skel" role="status" aria-label="Yuklanmoqda"><div class="sk sk-h"></div><div class="sk sk-p"></div><div class="sk sk-p short"></div><div class="sk-grid">${'<div class="sk sk-card"></div>'.repeat(6)}</div></div>`;
 async function api(path, opts = {}) {
@@ -95,10 +100,11 @@ async function router() {
   const fn = routes[route] || notFound;
   document.title = (TITLES[route] || 'Prava test onlayn') + ' — pravauchun.uz';
   const id = ++navId;
+  loadStart();
   // ma'lumot tez kelsa skelet ko'rinmaydi, sekin kelsa bo'sh joy o'rniga chiqadi
   const skelT = setTimeout(() => { if (id === navId) $app.innerHTML = skeleton(); }, 150);
   try { await fn(arg && decodeURIComponent(arg)); } catch (e) { if (id === navId) errorView(e); }
-  finally { clearTimeout(skelT); }
+  finally { clearTimeout(skelT); loadEnd(); }
   if (id !== navId) return;
   $app.classList.remove('enter'); void $app.offsetWidth; $app.classList.add('enter');
 }

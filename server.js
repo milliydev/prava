@@ -493,7 +493,11 @@ app.post('/api/admin/upload', auth, upload.single('image'), (req, res) => {
 
 /* Statik fayllar */
 const seoNotFound = seo(app, { db, TOPICS, GUIDE, TICKET_SIZE, FREE });
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: '7d', index: false, extensions: ['html'] }));
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '7d', index: false, extensions: ['html'],
+  // kod va stil fayllari har safar tekshiriladi: yangilanish darhol yetib boradi (o'zgarmagan bo'lsa 304 qaytadi)
+  setHeaders: (res, file) => { if (/\.(js|css|html)$/.test(file)) res.setHeader('Cache-Control', 'no-cache'); }
+}));
 app.get(/^\/(?!api\/).*/, seoNotFound);
 app.use((err, req, res, next) => { console.error(err); res.status(500).json({ error: 'Serverda xatolik' }); });
 
