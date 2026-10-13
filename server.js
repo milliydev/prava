@@ -302,10 +302,11 @@ app.post('/api/ai', async (req, res) => {
 });
 
 /* Ochiq API */
-app.get('/api/meta', (req, res) => {
+const metaData = () => {
   const total = db.prepare('SELECT COUNT(*) c FROM questions').get().c;
-  res.json({ total, tickets: Math.floor(total / TICKET_SIZE), ticketSize: TICKET_SIZE, freeTickets: FREE.tickets, exam: { size: 20, minutes: 25, maxErrors: 2 } });
-});
+  return { total, tickets: Math.floor(total / TICKET_SIZE), ticketSize: TICKET_SIZE, freeTickets: FREE.tickets, exam: { size: 20, minutes: 25, maxErrors: 2 } };
+};
+app.get('/api/meta', (req, res) => res.json(metaData()));
 
 app.get('/api/topics', (req, res) => {
   const counts = Object.fromEntries(db.prepare('SELECT topic, COUNT(*) c FROM questions GROUP BY topic').all().map(r => [r.topic, r.c]));
@@ -492,11 +493,15 @@ app.post('/api/admin/upload', auth, upload.single('image'), (req, res) => {
 });
 
 /* Statik fayllar */
-const seoNotFound = seo(app, { db, TOPICS, GUIDE, TICKET_SIZE, FREE });
+const seoNotFound = seo(app, { db, TOPICS, GUIDE, TICKET_SIZE, FREE, metaData });
 app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: '7d', index: false, extensions: ['html'],
-  // kod va stil fayllari har safar tekshiriladi: yangilanish darhol yetib boradi (o'zgarmagan bo'lsa 304 qaytadi)
-  setHeaders: (res, file) => { if (/\.(js|css|html)$/.test(file)) res.setHeader('Cache-Control', 'no-cache'); }
+  // ?v=hash bilan so'ralgan fayl o'zgarmaydi (yangisi boshqa hash oladi) — brauzer qayta so'ramaydi;
+  // versiyasiz kod va stil fayllari har safar tekshiriladi (o'zgarmagan bo'lsa 304 qaytadi)
+  setHeaders: (res, file) => {
+    if (res.req.query.v) res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    else if (/\.(js|css|html)$/.test(file)) res.setHeader('Cache-Control', 'no-cache');
+  }
 }));
 app.get(/^\/(?!api\/).*/, seoNotFound);
 app.use((err, req, res, next) => { console.error(err); res.status(500).json({ error: 'Serverda xatolik' }); });

@@ -49,10 +49,11 @@ async function api(path, opts = {}) {
     return data;
   } finally { loadEnd(); }
 }
-let ME = null;
-const me = async () => ME || (ME = await api('/me').catch(() => ({ premium: false })));
+let ME = null, meP = null;
+// bir vaqtda bir nechta chaqiruv bitta so'rovni kutadi
+const me = async () => ME || (meP = meP || api('/me').catch(() => ({ premium: false })).then(u => { meP = null; return (ME = u); }));
 const somFmt = n => n.toLocaleString('ru-RU').replace(/,/g, ' ') + " so'm";
-let META = null;
+let META = window.__META || null;
 const meta = async () => META || (META = await api('/meta'));
 let cleanup = null; // joriy sahifaning taymerlarini to'xtatish uchun
 let navId = 0; // eng oxirgi o'tishni aniqlash uchun
@@ -591,7 +592,5 @@ function aiExplain(q, chosen) {
 }
 aiMount();
 
-router().finally(() => {
-  const sp = document.getElementById('splash');
-  if (sp) { sp.classList.add('off'); setTimeout(() => sp.remove(), 400); }
-});
+me(); // sahifa kodi bilan parallel yuklanadi
+router().finally(() => document.documentElement.classList.remove('booting'));

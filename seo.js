@@ -4,10 +4,13 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-module.exports = function seo(app, { db, TOPICS, GUIDE, TICKET_SIZE, FREE }) {
+module.exports = function seo(app, { db, TOPICS, GUIDE, TICKET_SIZE, FREE, metaData }) {
   const SITE = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
   const BRAND = 'pravauchun.uz';
-  const TPL = fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8');
+  // JS/CSS manziliga fayl hashini qo'shamiz: brauzer uzoq keshlaydi, fayl o'zgarsa yangi manzil bo'ladi
+  const ver = f => require('crypto').createHash('md5').update(fs.readFileSync(path.join(__dirname, 'public', f))).digest('hex').slice(0, 8);
+  const TPL = ['assets/style.css', 'assets/signs.js', 'assets/app.js'].reduce((t, f) => t.replace(`"/${f}"`, `"/${f}?v=${ver(f)}"`),
+    fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8'));
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   // belgilar nomlari
   const ctx = { window: {} }; vm.createContext(ctx);
@@ -34,6 +37,8 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j).replac
     const html = TPL
       .replace(/<meta name="description"[^>]*>\n?/, '')
       .replace(/<title>[\s\S]*?<\/title>/, head)
+      // /api/meta so'rovini kutmaslik uchun ma'lumot sahifaning o'zida keladi
+      .replace('<script src="/assets/signs.js', `<script>window.__META=${JSON.stringify(metaData()).replace(/</g, '\\u003c')}</script>\n<script src="/assets/signs.js`)
       .replace('<main class="wrap" id="app"><div class="loading">Yuklanmoqda…</div></main>',
         `<main class="wrap" id="app"><div class="ssr page-head"><h1>${esc(h1 || title)}</h1>${body}</div></main>`);
     res.status(status).set('Cache-Control', 'public, max-age=300').type('html').send(html);
