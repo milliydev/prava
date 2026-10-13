@@ -40,7 +40,36 @@
     </section>
 
     <div id="tabs" class="chips hidden" style="margin-top:22px"><button class="chip on"
-        data-tab="panel">Savollar</button><button class="chip" data-tab="instrPanel">Instruktorlar</button></div>
+        data-tab="panel">Savollar</button><button class="chip" data-tab="instrPanel">Instruktorlar</button><button class="chip"
+        data-tab="ticketPanel">Biletlar tahlili</button></div>
+    <section id="ticketPanel" class="hidden">
+      <div class="page-head">
+        <h1>Biletlar tahlili</h1>
+        <p id="tSummary" class="muted"></p>
+      </div>
+      <p class="muted" style="font-size:14px">Qizil — kamchiligi bor bilet (izohsiz, takroriy, bir xil variantli yoki rasmi
+        yo'q savol). Yashil — 20 ta savolning hammasi tekshirilgan va kamchiliksiz. Biletni bosing — savollari va
+        kamchiliklari chiqadi.</p>
+      <div class="tickets" id="tGrid"></div>
+      <div id="tDetail" class="hidden" style="margin-top:22px">
+        <div class="admin-tools" style="align-items:center"><h2 id="tTitle" style="font-size:22px;margin:0"></h2>
+          <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="tOnlyBad"> Faqat
+            kamchiligi borlar</label></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>№</th>
+                <th>Savol</th>
+                <th>Kamchiliklar</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
     <section id="instrPanel" class="hidden">
       <div class="page-head">
         <h1>Instruktorlar</h1>

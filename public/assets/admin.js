@@ -20,13 +20,13 @@ async function api(path, opts = {}) {
 }
 function logout() { token = ''; showLogin(); }
 function showLogin() {
-  ['panel', 'instrPanel', 'tabs', 'logoutBtn'].forEach(id => $(id).classList.add('hidden'));
+  ['panel', 'instrPanel', 'ticketPanel', 'tabs', 'logoutBtn'].forEach(id => $(id).classList.add('hidden'));
   ['editDlg', 'instrDlg'].forEach(id => $(id).open && $(id).close());
   $('login').classList.remove('hidden');
 }
 async function showPanel() {
   if (!token) return showLogin();
-  $('login').classList.add('hidden'); $('panel').classList.remove('hidden'); $('instrPanel').classList.add('hidden'); $('logoutBtn').classList.remove('hidden');
+  $('login').classList.add('hidden'); $('panel').classList.remove('hidden'); $('instrPanel').classList.add('hidden'); $('ticketPanel').classList.add('hidden'); $('logoutBtn').classList.remove('hidden');
   document.querySelectorAll('#tabs .chip').forEach(c => c.classList.toggle('on', c.dataset.tab === 'panel'));
   TOPICS = await (await fetch('/api/topics')).json();
   const opts = TOPICS.map(t => `<option value="${t.id}">${esc(t.title)}</option>`).join('');
@@ -129,6 +129,7 @@ $('editForm').onsubmit = async e => {
     if (editing) await api('/admin/questions/' + editing.id, { method: 'PUT', json: body });
     else await api('/admin/questions', { method: 'POST', json: body });
     $('editDlg').close(); toast(editing ? 'Saqlandi' : "Savol qo'shildi"); load();
+    if (!$('ticketPanel').classList.contains('hidden')) loadTickets(curTicket);
   } catch (err) { $('formErr').textContent = err.message; }
 };
 
@@ -161,7 +162,9 @@ document.querySelectorAll('#tabs [data-tab]').forEach(b => b.onclick = () => {
   document.querySelectorAll('#tabs .chip').forEach(c => c.classList.toggle('on', c === b));
   $('panel').classList.toggle('hidden', b.dataset.tab !== 'panel');
   $('instrPanel').classList.toggle('hidden', b.dataset.tab !== 'instrPanel');
+  $('ticketPanel').classList.toggle('hidden', b.dataset.tab !== 'ticketPanel');
   if (b.dataset.tab === 'instrPanel') loadInstr();
+  if (b.dataset.tab === 'ticketPanel') loadTickets();
 });
 async function loadInstr() {
   try {
@@ -206,4 +209,57 @@ $('instrForm').onsubmit = async e => {
     if (editI) await api('/admin/instructors/' + editI.id, { method: 'PUT', json: body }); else await api('/admin/instructors', { method: 'POST', json: body });
     $('instrDlg').close(); toast('Saqlandi'); loadInstr();
   } catch (err) { $('iErr').textContent = err.message; }
+};
+
+/* ---- Biletlar tahlili ---- */
+let curTicket = null, tQs = [];
+const realIssues = q => q.issues.filter(x => x !== 'tekshirilmagan');
+async function loadTickets(open) {
+  try {
+    const d = await api('/admin/tickets');
+    $('tSummary').textContent = `${d.total} ta savol, ${d.tickets.length} ta bilet (har biri ${d.ticketSize} ta).` +
+      (d.leftover ? ` ${d.leftover} ta savol hech bir biletga kirmagan.` : '') + ` Kamchiligi bor savollar: ${d.issues} ta.`;
+    $('tGrid').innerHTML = d.tickets.map(t => {
+      const bad = t.noExpl + t.duplicates + t.badOptions + t.missingImage;
+      const cls = bad ? 'fail' : t.verified === d.ticketSize ? 'pass' : '';
+      const tip = `Tekshirilgan: ${t.verified}/${d.ticketSize}; izohsiz: ${t.noExpl}; takroriy: ${t.duplicates}; bir xil variant: ${t.badOptions}; rasmi yo'q: ${t.missingImage}; rasmli: ${t.images}\nMavzular: ${t.topics.map(([k, n]) => tname(k) + ' — ' + n).join(', ')}`;
+      return `<button class="ticket ${cls}" style="font:inherit;cursor:pointer" data-t="${t.number}" title="${esc(tip)}"><b>${t.number}</b><small>${bad ? bad + ' kamchilik' : t.verified + '/' + d.ticketSize + ' ✓'}</small></button>`;
+    }).join('') + (d.leftover ? `<button class="ticket" style="font:inherit;cursor:pointer" data-t="0"><b>+${d.leftover}</b><small>biletsiz</small></button>` : '');
+    if (open != null) showTicket(open);
+  } catch (e) { toast(e.message); }
+}
+const tname = id => (TOPICS.find(t => t.id === id) || {}).title || id;
+async function showTicket(n) {
+  try {
+    const d = await api('/admin/tickets/' + n);
+    curTicket = n; tQs = d.questions;
+    $('tTitle').textContent = n ? `${n}-bilet` : 'Biletga kirmagan savollar';
+    $('tDetail').classList.remove('hidden'); renderTicket();
+    $('tDetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (e) { toast(e.message); }
+}
+function renderTicket() {
+  const list = $('tOnlyBad').checked ? tQs.filter(q => realIssues(q).length) : tQs;
+  $('tRows').innerHTML = list.length ? list.map(q => `<tr>
+    <td>${q.id}</td>
+    <td>${esc(q.question)}${q.image ? ' <span class="tag">rasm</span>' : ''}<br><small class="muted">To'g'ri: ${esc(q.options[q.correct])} · ${esc(tname(q.topic))}</small>
+      <div class="ai-out muted" id="ai${q.id}" style="white-space:pre-wrap;font-size:14px"></div></td>
+    <td>${q.issues.length ? q.issues.map(x => `<span class="tag" style="${x === 'tekshirilmagan' ? '' : 'color:var(--red)'}">${esc(x)}</span>`).join(' ') : '<span class="tag ok">kamchiliksiz</span>'}</td>
+    <td style="white-space:nowrap"><button class="ghost" data-te="${q.id}">Tahrirlash</button> <button class="ghost" data-ai="${q.id}">AI tekshiruv</button></td></tr>`).join('')
+    : '<tr><td colspan="4" class="muted">Bu biletda kamchiligi bor savol yo\'q.</td></tr>';
+}
+$('tOnlyBad').onchange = renderTicket;
+$('tGrid').onclick = e => { const b = e.target.closest('[data-t]'); if (b) showTicket(+b.dataset.t); };
+$('tRows').onclick = async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.te) openEditor(tQs.find(q => q.id === +b.dataset.te));
+  if (b.dataset.ai) {
+    const out = $('ai' + b.dataset.ai); b.disabled = true; out.textContent = 'AI tekshirmoqda…';
+    try {
+      const d = await api(`/admin/questions/${b.dataset.ai}/ai-check`, { method: 'POST' });
+      out.style.color = /^\W*XATO/i.test(d.text) ? 'var(--red)' : /^\W*TO.G.RI/i.test(d.text) ? 'var(--green)' : '';
+      out.textContent = d.text;
+    } catch (err) { out.textContent = err.message; }
+    b.disabled = false;
+  }
 };

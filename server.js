@@ -480,6 +480,61 @@ app.get('/api/admin/orders', auth, (req, res) => {
   res.json(db.prepare('SELECT * FROM orders ORDER BY id DESC LIMIT 200').all());
 });
 
+/* Biletlar tahlili: har bir savoldagi kamchiliklar va biletlar bo'yicha umumiy holat */
+const normText = t => String(t || '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+function analyzeQuestions() {
+  const rows = db.prepare('SELECT * FROM questions ORDER BY id').all();
+  const seen = new Map();
+  for (const r of rows) { const k = normText(r.question) + '|' + r.image; seen.set(k, [...(seen.get(k) || []), r.id]); }
+  return rows.map((r, i) => {
+    const q = rowToQ(r, true), issues = [];
+    if (!q.verified) issues.push('tekshirilmagan');
+    if (!q.explanation) issues.push("izoh yo'q");
+    const opts = q.options.map(normText);
+    if (new Set(opts).size < opts.length) issues.push('bir xil variantlar');
+    const dup = seen.get(normText(r.question) + '|' + r.image).filter(id => id !== r.id);
+    if (dup.length) issues.push('takroriy: ' + dup.map(id => '№' + id).join(', '));
+    if (q.image.startsWith('/uploads/') && !fs.existsSync(path.join(UPLOAD_DIR, path.basename(q.image)))) issues.push('rasm fayli yo\'q');
+    return { ...q, ticket: Math.floor(i / TICKET_SIZE) + 1, issues };
+  });
+}
+app.get('/api/admin/tickets', auth, (req, res) => {
+  const all = analyzeQuestions(), full = Math.floor(all.length / TICKET_SIZE), tickets = [];
+  for (let n = 1; n <= full; n++) {
+    const qs = all.slice((n - 1) * TICKET_SIZE, n * TICKET_SIZE);
+    const count = re => qs.filter(q => q.issues.some(x => re.test(x))).length;
+    tickets.push({ number: n, verified: qs.filter(q => q.verified).length, noExpl: count(/^izoh/), duplicates: count(/^takroriy/),
+      badOptions: count(/^bir xil/), missingImage: count(/^rasm/), images: qs.filter(q => q.image).length,
+      topics: Object.entries(qs.reduce((m, q) => (m[q.topic] = (m[q.topic] || 0) + 1, m), {})).sort((a, b) => b[1] - a[1]) });
+  }
+  res.json({ total: all.length, ticketSize: TICKET_SIZE, tickets, leftover: all.length - full * TICKET_SIZE,
+    issues: all.filter(q => q.issues.some(x => x !== 'tekshirilmagan')).length });
+});
+app.get('/api/admin/tickets/:n', auth, (req, res) => {
+  const n = parseInt(req.params.n, 10), all = analyzeQuestions();
+  // n = 0 — hech bir biletga kirmay qolgan oxirgi savollar
+  const qs = n === 0 ? all.slice(Math.floor(all.length / TICKET_SIZE) * TICKET_SIZE) : all.slice((n - 1) * TICKET_SIZE, n * TICKET_SIZE);
+  if (!(n >= 0) || (n > 0 && qs.length < TICKET_SIZE)) return res.status(404).json({ error: 'Bilet topilmadi' });
+  res.json({ number: n, questions: qs });
+});
+app.post('/api/admin/questions/:id/ai-check', auth, async (req, res) => {
+  if (!AI.key) return res.status(503).json({ error: 'AI sozlanmagan (ANTHROPIC_API_KEY yo\'q)' });
+  const r = db.prepare('SELECT * FROM questions WHERE id=?').get(req.params.id);
+  if (!r) return res.status(404).json({ error: 'Savol topilmadi' });
+  const q = rowToQ(r);
+  const text = `Quyidagi haydovchilik imtihoni test savolini tekshir.\nSavol: ${q.question}\n${q.image ? `(Savolda rasm bor: ${q.image} — uni ko'rmaysan, buni hisobga ol)\n` : ''}Variantlar:\n${q.options.map((o, k) => `${k + 1}) ${o}`).join('\n')}\nBelgilangan to'g'ri javob: ${q.correct + 1}\nIzoh: ${q.explanation || "(yo'q)"}\n\nJavobing birinchi qatori faqat bittasi bo'lsin: "TO'G'RI", "XATO" yoki "NOANIQ". Keyin 2–5 gapda sababini ayt: belgilangan javob YHQga mosmi, savol yoki variantlar matnida xato bormi, izoh to'g'rimi. Xato bo'lsa, qaysi variant to'g'ri ekanini ayt.`;
+  try {
+    const x = await fetch((process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com') + '/v1/messages', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-api-key': AI.key, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: AI.model, max_tokens: 600, system: AI_SYSTEM, messages: [{ role: 'user', content: text }] })
+    });
+    const data = await x.json();
+    if (!x.ok) { console.error('AI xato:', data?.error?.message || x.status); return res.status(502).json({ error: 'AI javob bera olmadi' }); }
+    res.json({ text: (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n').trim() });
+  } catch (e) { console.error(e); res.status(502).json({ error: 'AI bilan aloqa yo\'q' }); }
+});
+
 app.get('/api/admin/export', auth, (req, res) => {
   const rows = db.prepare('SELECT * FROM questions ORDER BY id').all().map(r => {
     const q = rowToQ(r, true); delete q.id; delete q.created_at; delete q.updated_at; return q;
