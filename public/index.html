@@ -17,7 +17,7 @@ html.booting #app>.ssr{display:none}
 html.booting #app::before{content:"";display:block;width:26px;height:26px;margin:90px auto;border-radius:50%;border:3px solid var(--line,#E3E7F0);border-top-color:var(--accent,#3557F5);animation:bootSpin .8s linear infinite}
 @keyframes bootSpin{to{transform:rotate(360deg)}}
 </style>
-<script>document.documentElement.classList.add('booting');setTimeout(function(){document.documentElement.classList.remove('booting')},6000)</script>
+<script>document.documentElement.classList.add('booting');setTimeout(function(){document.documentElement.classList.remove('booting')},2000)</script>
 <script>try{var t=localStorage.getItem('yolchi_theme');if(t)document.documentElement.dataset.theme=JSON.parse(t)}catch(e){}</script>
 </head>
 <body>
