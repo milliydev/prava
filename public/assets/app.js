@@ -320,7 +320,12 @@ function runTest(cfg) {
     if (S.mode === 'marathon') { const mm = store.get('marathon', null); if (mm) { mm.ans[q.id] = k; mm.res[q.id] = k === q.correct ? 1 : 0; store.set('marathon', mm); } }
     if (k !== q.correct) progress.addMistake(q.id); else if (S.mode === 'mistakes') progress.removeMistake(q.id);
     render();
-    if (S.mode === 'exam' && wrong() > S.maxErrors) { S.done = true; setTimeout(finish, 1300); }
+    if (S.mode === 'exam' && wrong() > S.maxErrors) { S.done = true; setTimeout(finish, 1300); return; }
+    // to'g'ri javobdan keyin avtomatik keyingi savolga o'tish
+    if (k === q.correct && S.i < S.questions.length - 1) {
+      const at = S.i, hash = S.hash;
+      setTimeout(() => { if (!S.done && S.i === at && curKey() === hash) move(1); }, 900);
+    }
   }
   function move(d) {
     const n = S.i + d; if (n < 0 || n >= S.questions.length) return;
