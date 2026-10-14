@@ -3,7 +3,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 // Token faqat xotirada: sahifa ochilganda/yangilanganda har safar parol so'raladi
 let token = '';
-let TOPICS = [], page = 1, items = [], editing = null, customImage = '';
+let TOPICS = [], page = 1, items = [], editing = null, customImage = '', curAudio = '';
 
 function toast(msg) {
   const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
@@ -55,7 +55,7 @@ async function load() {
     const tname = id => (TOPICS.find(t => t.id === id) || {}).title || id;
     $('rows').innerHTML = items.length ? items.map(it => `<tr>
       <td>${it.id}</td>
-      <td>${esc(it.question)}${it.image ? ' <span class="tag">rasm</span>' : ''}<br><small class="muted">To'g'ri: ${esc(it.options[it.correct])}</small></td>
+      <td>${esc(it.question)}${it.image ? ' <span class="tag">rasm</span>' : ''}${it.audio ? ' <span class="tag">ovoz</span>' : ''}<br><small class="muted">To'g'ri: ${esc(it.options[it.correct])}</small></td>
       <td><small>${esc(tname(it.topic))}</small></td>
       <td><button class="tag ${it.verified ? 'ok' : ''}" style="border:0" data-ver="${it.id}">${it.verified ? 'tekshirilgan' : 'tekshirilmagan'}</button></td>
       <td style="white-space:nowrap"><button class="ghost" data-edit="${it.id}">Tahrirlash</button> <button class="ghost" data-del="${it.id}">O'chirish</button></td></tr>`).join('')
@@ -90,8 +90,15 @@ function preview(img) {
   const p = $('fPreview'); const html = img ? renderImage(img) : '';
   p.innerHTML = html; p.classList.toggle('hidden', !html);
 }
+function setAudio(url) {
+  curAudio = url || '';
+  $('fAudioBox').classList.toggle('hidden', !curAudio);
+  const a = $('fAudioPrev'); a.pause();
+  if (curAudio) a.src = curAudio; else a.removeAttribute('src');
+}
 function openEditor(it) {
   editing = it || null; customImage = '';
+  setAudio(it ? it.audio : ''); $('fAudio').value = '';
   $('dlgTitle').textContent = it ? `${it.id}-savolni tahrirlash` : 'Yangi savol';
   $('fTopic').value = it ? it.topic : TOPICS[0].id;
   $('fQuestion').value = it ? it.question : '';
@@ -114,6 +121,16 @@ $('fUpload').onchange = async () => {
   try { const d = await api('/admin/upload', { method: 'POST', body: fd }); customImage = d.url; $('fImage').value = '__custom'; preview(customImage); toast('Rasm yuklandi'); }
   catch (err) { $('formErr').textContent = err.message; }
 };
+$('fAudio').onchange = async () => {
+  const f = $('fAudio').files[0]; if (!f) return;
+  const fd = new FormData(); fd.append('audio', f);
+  toast('Audio yuklanmoqda…');
+  try { const d = await api('/admin/upload-audio', { method: 'POST', body: fd }); setAudio(d.url); toast('Audio yuklandi'); }
+  catch (err) { $('formErr').textContent = err.message; }
+  $('fAudio').value = '';
+};
+$('fAudioDel').onclick = () => setAudio('');
+$('editDlg').addEventListener('close', () => $('fAudioPrev').pause());
 $('editForm').onsubmit = async e => {
   e.preventDefault();
   const rows = [...$('fOptions').children];
@@ -122,6 +139,7 @@ $('editForm').onsubmit = async e => {
     options: rows.map(r => r.querySelector('input[type=text]').value.trim()),
     correct: rows.findIndex(r => r.querySelector('input[type=radio]').checked),
     image: $('fImage').value === '__custom' ? customImage : $('fImage').value,
+    audio: curAudio,
     verified: $('fVerified').checked
   };
   if (body.correct < 0) { $('formErr').textContent = "To'g'ri javobni belgilang"; return; }
@@ -250,10 +268,11 @@ function renderTicket() {
   const list = $('tOnlyBad').checked ? tQs.filter(q => realIssues(q).length) : tQs;
   $('tRows').innerHTML = list.length ? list.map(q => `<tr>
     <td>${q.id}</td>
-    <td>${esc(q.question)}${q.image ? ' <span class="tag">rasm</span>' : ''}<br><small class="muted">${esc(tname(q.topic))}</small>
+    <td>${esc(q.question)}${q.image ? ' <span class="tag">rasm</span>' : ''}${q.audio ? ' <span class="tag">ovoz</span>' : ''}<br><small class="muted">${esc(tname(q.topic))}</small>
       ${q.image ? `<div class="qimg" style="max-width:260px;margin:6px 0">${renderImage(q.image)}</div>` : ''}
       <ol style="margin:6px 0 0;padding-left:20px;font-size:14px">${q.options.map((o, k) => `<li style="${k === q.correct ? 'color:var(--green);font-weight:600' : ''}">${esc(o)}${k === q.correct ? ' ✓' : ''}</li>`).join('')}</ol>
       ${q.explanation ? `<small class="muted">Izoh: ${esc(q.explanation)}</small>` : ''}
+      ${q.audio ? `<audio controls preload="none" src="${esc(q.audio)}" style="display:block;width:100%;max-width:320px;margin-top:6px"></audio>` : ''}
       <div class="ai-out muted" id="ai${q.id}" style="white-space:pre-wrap;font-size:14px"></div></td>
     <td>${q.issues.length ? q.issues.map(x => `<span class="tag" style="${x === 'tekshirilmagan' ? '' : 'color:var(--red)'}">${esc(x)}</span>`).join(' ') : '<span class="tag ok">kamchiliksiz</span>'}</td>
     <td style="white-space:nowrap"><button class="ghost" data-te="${q.id}">Tahrirlash</button> <button class="ghost" data-ai="${q.id}">AI tekshiruv</button></td></tr>`).join('')

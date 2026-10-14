@@ -224,6 +224,14 @@ async function mistakes() {
 const CAR = `<svg class="car" id="car" viewBox="0 0 46 26" aria-hidden="true"><rect x="2" y="3" width="42" height="20" rx="6" fill="#F3C31B"/><rect x="28" y="6" width="9" height="14" rx="2" fill="#2E3338" opacity=".75"/><rect x="8" y="6" width="7" height="14" rx="2" fill="#2E3338" opacity=".5"/></svg>`;
 const FLAG = `<svg class="flag" viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="22" fill="#fff"/><path d="M0 0h5.5v5.5H0zM11 0h5.5v5.5H11zM5.5 5.5H11V11H5.5zM16.5 5.5H22V11h-5.5zM0 11h5.5v5.5H0zM11 11h5.5v5.5H11zM5.5 16.5H11V22H5.5zM16.5 16.5H22V22h-5.5z" fill="#222"/></svg>`;
 
+// Ovozli tushuntirish: sahifa qayta chizilganda ham ijro to'xtamasin, shuning uchun DOM dan tashqarida
+const voice = new Audio(); voice.preload = 'none';
+const voiceLabel = () => voice.paused ? '🔊 Ovozli tushuntirish' : '⏸ Ovozni to\'xtatish';
+['play', 'pause', 'ended'].forEach(ev => voice.addEventListener(ev, () => { const b = document.getElementById('voiceBtn'); if (b) b.textContent = voiceLabel(); }));
+function voiceToggle(src) {
+  if (voice.getAttribute('src') !== src) voice.src = src;
+  if (voice.paused) voice.play().catch(() => {}); else voice.pause();
+}
 function runTest(cfg) {
   const S = { ...cfg, i: 0, ans: {}, showExp: {}, left: cfg.seconds || 0, done: false, hash: curKey() };
   if (cfg.saved) {
@@ -250,13 +258,14 @@ function runTest(cfg) {
     else if (e.key === 'ArrowLeft') move(-1);
   };
   document.addEventListener('keydown', onKey);
-  cleanup = () => { clearInterval(timer); document.removeEventListener('keydown', onKey); };
+  cleanup = () => { clearInterval(timer); document.removeEventListener('keydown', onKey); voice.pause(); };
 
   const wrong = () => Object.entries(S.ans).filter(([i, a]) => a !== S.questions[i].correct).length;
   const right = () => Object.entries(S.ans).filter(([i, a]) => a === S.questions[i].correct).length;
 
   function render() {
     const q = S.questions[S.i], chosen = S.ans[S.i], answered = chosen !== undefined;
+    if (voice.getAttribute('src') && voice.getAttribute('src') !== q.audio) voice.pause();
     const done = Object.keys(S.ans).length, total = S.questions.length;
     const visible = S.questions.map((x, n) => ({ x, n })).filter(({ n }) => !paged || Math.floor(n / BLOCK) === Math.floor(S.i / BLOCK));
     $app.innerHTML = `<div class="testwrap">
@@ -273,6 +282,7 @@ function runTest(cfg) {
           return `<button class="ans ${cls}" data-k="${k}" ${answered ? 'disabled' : ''}><span class="k">F${k + 1}</span><span>${esc(o)}</span></button>`;
         }).join('')}</div>
         ${answered ? `<div class="verdict-line ${chosen === q.correct ? 'ok' : 'bad'}">${chosen === q.correct ? "✓ To'g'ri javob" : "✕ Noto'g'ri javob"}</div>` : ''}
+        ${q.audio && (S.mode !== 'exam' || answered) ? `<button class="sharh-btn voice" id="voiceBtn">${voice.getAttribute('src') === q.audio ? voiceLabel() : '🔊 Ovozli tushuntirish'}</button>` : ''}
         ${S.mode !== 'exam' || answered ? `<button class="sharh-btn ai" id="aiBtn">🤖 AI tushuntirsin</button>` : ''}
         ${q.explanation && (S.mode !== 'exam' || answered) ? `<button class="sharh-btn" id="expBtn" aria-expanded="${!!S.showExp[S.i]}">${S.showExp[S.i] ? 'Sharhni yashirish' : "💡 Sharhni ko'rish"}</button>${S.showExp[S.i] ? `<div class="explain fade">${esc(q.explanation)}</div>` : ''}` : ''}
       </div>
@@ -288,6 +298,7 @@ function runTest(cfg) {
     document.getElementById('prevBtn').onclick = () => move(-1);
     const nb = document.getElementById('nextBtn'); if (nb) nb.onclick = () => move(1);
     const fb = document.getElementById('finBtn'); if (fb) fb.onclick = finish;
+    const vb = document.getElementById('voiceBtn'); if (vb) vb.onclick = () => voiceToggle(q.audio);
     const ab = document.getElementById('aiBtn'); if (ab) ab.onclick = () => aiExplain(q, chosen);
     const xb = document.getElementById('expBtn'); if (xb) xb.onclick = () => { S.showExp[S.i] = !S.showExp[S.i]; render(); };
     if (paged) {

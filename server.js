@@ -59,6 +59,10 @@ CREATE TABLE IF NOT EXISTS ai_log (device_id TEXT, day TEXT, n INTEGER DEFAULT 0
 CREATE TABLE IF NOT EXISTS exam_log (device_id TEXT, day TEXT, n INTEGER DEFAULT 0, PRIMARY KEY(device_id, day));
 `);
 
+// Ovozli tushuntirish ustuni eski bazalarga ham qo'shiladi
+if (!db.prepare('PRAGMA table_info(questions)').all().some(c => c.name === 'audio')) db.exec("ALTER TABLE questions ADD COLUMN audio TEXT DEFAULT ''");
+const audioUrl = a => /^\/uploads\/[a-f0-9]+\.(mp3|m4a|aac|ogg|oga|opus|webm|wav)$/.test(a || '') ? a : '';
+
 const TOPICS = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'topics.json'), 'utf8'));
 const TOPIC_IDS = new Set(TOPICS.map(t => t.id));
 const GUIDE = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'guide.json'), 'utf8'));
@@ -73,12 +77,12 @@ function validQuestion(q) {
   return null;
 }
 
-const insertQ = db.prepare(`INSERT INTO questions (topic, question, options, correct, explanation, image, verified)
-  VALUES (@topic, @question, @options, @correct, @explanation, @image, @verified)`);
+const insertQ = db.prepare(`INSERT INTO questions (topic, question, options, correct, explanation, image, audio, verified)
+  VALUES (@topic, @question, @options, @correct, @explanation, @image, @audio, @verified)`);
 const insertMany = db.transaction(list => {
   for (const q of list) insertQ.run({
     topic: q.topic, question: q.question.trim(), options: JSON.stringify(q.options.map(s => s.trim())),
-    correct: q.correct, explanation: (q.explanation || '').trim(), image: q.image || '', verified: q.verified ? 1 : 0
+    correct: q.correct, explanation: (q.explanation || '').trim(), image: q.image || '', audio: audioUrl(q.audio), verified: q.verified ? 1 : 0
   });
 });
 
@@ -116,7 +120,7 @@ const instrRow = b => ({
 });
 
 const rowToQ = (r, withMeta = false) => {
-  const q = { id: r.id, topic: r.topic, question: r.question, options: JSON.parse(r.options), correct: r.correct, explanation: r.explanation, image: r.image };
+  const q = { id: r.id, topic: r.topic, question: r.question, options: JSON.parse(r.options), correct: r.correct, explanation: r.explanation, image: r.image, audio: r.audio || '' };
   if (withMeta) Object.assign(q, { verified: !!r.verified, created_at: r.created_at, updated_at: r.updated_at });
   return q;
 };
@@ -432,8 +436,8 @@ app.put('/api/admin/questions/:id', auth, (req, res) => {
   const err = validQuestion(req.body);
   if (err) return res.status(400).json({ error: err });
   const q = req.body;
-  const r = db.prepare(`UPDATE questions SET topic=?, question=?, options=?, correct=?, explanation=?, image=?, verified=?, updated_at=CURRENT_TIMESTAMP WHERE id=?`)
-    .run(q.topic, q.question.trim(), JSON.stringify(q.options.map(s => s.trim())), q.correct, (q.explanation || '').trim(), q.image || '', q.verified ? 1 : 0, req.params.id);
+  const r = db.prepare(`UPDATE questions SET topic=?, question=?, options=?, correct=?, explanation=?, image=?, audio=?, verified=?, updated_at=CURRENT_TIMESTAMP WHERE id=?`)
+    .run(q.topic, q.question.trim(), JSON.stringify(q.options.map(s => s.trim())), q.correct, (q.explanation || '').trim(), q.image || '', audioUrl(q.audio), q.verified ? 1 : 0, req.params.id);
   r.changes ? res.json({ ok: true }) : res.status(404).json({ error: 'Savol topilmadi' });
 });
 
@@ -555,6 +559,20 @@ app.post('/api/admin/upload', auth, upload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Faqat PNG, JPG, WEBP yoki GIF rasm (2 MB gacha)' });
   res.json({ url: '/uploads/' + req.file.filename });
 });
+// Savolga ovozli tushuntirish (har bir savolga alohida audio fayl)
+const AUDIO_EXT = { 'audio/mpeg': '.mp3', 'audio/mp3': '.mp3', 'audio/mp4': '.m4a', 'audio/x-m4a': '.m4a', 'audio/aac': '.aac', 'audio/ogg': '.ogg', 'audio/opus': '.opus', 'audio/webm': '.webm', 'audio/wav': '.wav', 'audio/x-wav': '.wav', 'audio/wave': '.wav' };
+const uploadAudio = multer({
+  storage: multer.diskStorage({
+    destination: UPLOAD_DIR,
+    filename: (req, file, cb) => cb(null, crypto.randomBytes(8).toString('hex') + AUDIO_EXT[file.mimetype])
+  }),
+  limits: { fileSize: 15 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => cb(null, !!AUDIO_EXT[file.mimetype])
+});
+app.post('/api/admin/upload-audio', auth, uploadAudio.single('audio'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Faqat MP3, M4A, OGG, WEBM yoki WAV audio (15 MB gacha)' });
+  res.json({ url: '/uploads/' + req.file.filename });
+});
 
 /* Statik fayllar */
 const seoNotFound = seo(app, { db, TOPICS, GUIDE, TICKET_SIZE, FREE, metaData });
@@ -574,6 +592,8 @@ app.use(express.static(path.join(__dirname, 'public'), {
   }
 }));
 app.get(/^\/(?!api\/).*/, seoNotFound);
-app.use((err, req, res, next) => { console.error(err); res.status(500).json({ error: 'Serverda xatolik' }); });
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) return res.status(400).json({ error: err.code === 'LIMIT_FILE_SIZE' ? 'Fayl hajmi juda katta' : 'Faylni yuklab bo\'lmadi' });
+  console.error(err); res.status(500).json({ error: 'Serverda xatolik' }); });
 
 app.listen(PORT, () => console.log(`pravauchun.uz ishlamoqda: http://localhost:${PORT}`));

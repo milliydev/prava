@@ -347,6 +347,7 @@ code{font-size:12px;background:var(--soft);padding:1px 6px;border-radius:6px}
 .ai-form .btn{padding:10px 14px;box-shadow:none}
 .ai-note{margin:0;padding:0 12px 10px;font-size:11.5px;color:var(--muted)}
 .sharh-btn.ai{margin-right:8px}
+.sharh-btn.voice{margin-right:8px}
 @media (max-width:760px){.ai-fab{bottom:calc(76px + env(safe-area-inset-bottom,0px));right:14px;padding:12px}.ai-fab span{display:none}.ai-panel{right:8px;left:8px;width:auto;bottom:calc(72px + env(safe-area-inset-bottom,0px));height:calc(100vh - 150px)}}
 .ai-form textarea{height:44px;font-size:14px;line-height:1.4}
 

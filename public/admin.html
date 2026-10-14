@@ -152,6 +152,11 @@
         <input type="file" id="fUpload" accept="image/png,image/jpeg,image/webp,image/gif">
         <div id="fPreview" class="qimg hidden"></div>
       </div>
+      <div class="field"><label for="fAudio">Ovozli tushuntirish</label>
+        <input type="file" id="fAudio" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/ogg,audio/opus,audio/webm,audio/wav,.mp3,.m4a,.ogg,.opus,.wav">
+        <div id="fAudioBox" class="hidden" style="display:flex;gap:8px;align-items:center"><audio id="fAudioPrev" controls preload="none" style="flex:1;min-width:0"></audio><button type="button" class="ghost" id="fAudioDel">O'chirish</button></div>
+        <small class="muted">MP3, M4A, OGG yoki WAV, 15 MB gacha. Savol ochilganda o'quvchi tinglay oladi.</small>
+      </div>
       <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="fVerified"> YHQ matni bilan
         tekshirildi</label>
       <p id="formErr" style="color:var(--red);margin:0"></p>
